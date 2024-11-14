@@ -1,0 +1,149 @@
+1,what is mean by snowflake?
+  -->snowflake is cloud based data warehouse introdued in 2012
+  -->it is mainly used for data storage,data processing,analytical solution
+  -->snowflake does not have their own infracture
+  -->it built on top of the aws,azure,gcp
+  -->it supported to strecture data,semi strecture,unstrecture data
+  -->it is a saas modal (software as-a service)
+2,what is mean by ETL AND ELT TOOLS?
+  -->ETL stands for Extract transform load
+  -->ELT stands for Extract load transform
+  -->Informatica,talend,matillion
+  
+3,what is mean by sql -->sql means strecture query language, it is not a database, for communicate aney 
+						database we can use sql language
+4,sub-language of sql-->
+	--> DDL -->Data definaion language
+		a,CREATE -->it is used to create database and table
+		b,DROP -->it is used to drop the database and table
+		c,ALTER: It is used to alter the structure of database (Table  3 1 column extra) 
+	    d,TRUNCATE: It is used to remove all the records from a table 
+	    e,COMMENT: It is used to add comments to the data dictonary 
+	    f,RENAME: It is used to rename an objects existing in the database 
+	--> DML --> Data Manipulation Language 
+	    a,INSERT: It is used to insert the data into tables 
+		b,UPDATE: It is used to update the existing data 
+		c,DELETE: It is used to delete all records and particular records in a table 
+    --> DQL --> Data Query Language
+        a,SELECT:  It is used to retrive or display the records from database 
+	
+    --> DCL --> Data Control Language 
+        a,GRANT: It is used to give user access /privileges to the database 
+	    b,REVOKE: It is used to withdraws the User's access 
+	
+    --> TCL --> Transaction Cotrol Language 
+        a,COMMIT: It is used to save transactions permanently 
+	    b,ROLLBACK: It is used to revert the previuos tranactions before commit operations
+
+ 		
+5,what is mean by database -->it is collection of data                                        					{strecture(table,format),semi-strecture(json,xmlf),un-strecture}
+6,what is mean by warehouse --> we are using to store the data but the purpose is different 
+                            --> historical data and analytical solution (large voulume of data)     							
+7,data types --> INT/NUMBER,CHAR/VARCHAR/STRING, DATE/DECIMAL
+8,What is mean by count(*)-->it display the all rows in table
+9,what is mean by count(colum-name) -->it is used to excepted null values in a table
+
+10,types of database-->MYSQL,ORACLE,DYNAMO-DB,MANGO-DB,POSTGRACE_SQL,HANA
+
+11,What is mean by limit and offset?
+    -->select * from employee
+	   limit 1,  offset 5
+	   -->limit 1 means display one (row) or (colum)
+	   -->offset means display the after 5 rows (ex, 6)
+
+12,Window functions:row_numbers-->it is unique values
+	rank -->two rows have same vales, rank also same,but next rank also skip accordingly
+	dense_rank -->two rows are same values,rank also same, but next rank is not skipped
+	lag -->it is used to display crrent row to previous row
+	lead -->it is used to display the current row to next rows
+					
+13,	Whatat is mean by sub_langguage ->it is used to query inside query is also sub-language
+14,CASE	-->if,else
+15,CTE  -->comman table expression
+
+16,set operators  -->the sql set operations are used to combine the two or more sql select statement there 
+					are four types
+		-->UNION;it is used to display both table information but remove duplicate values
+				  ex;-->table-1 rajesh,satish,mastan
+				     -->Table-2 rajesh,vamsi,sudhakar
+					 output;rajesh,satish,mastan,vamsi,sudhakar
+		-->UNION ALL;it is used to display both table information do not remove dupliccate values
+				  ex;-->table-1 rajesh,satish,mastan
+				     -->Table-2 rajesh,vamsi,sudhakar
+					output;rajesh,rajesh,mastan,vamsi,sudhakar
+					
+		-->minuse;
+		-->intersect;it is used to display the both table common values
+				  ex;-->table-1 rajesh,satish,mastan
+				     -->Table-2 rajesh,vamsi,sudhakar
+					output;rajesh,
+		-->AND:
+		-->OR:
+		-->NOT:
+		-->HAVING: HAVING is used to filter groups records.
+		-->GROUP_BY: 
+		-->ORDER BY: it print the output order wise (ASSENDING OR DESCNDING)
+		-->DISTINCT:It print the unique values only fro one table 
+		-->WHERE: it filter the records particular rows used to where condition
+17,AGGRIGATE FUNCTIONS :
+		-->AVG:
+		-->SUM:
+		-->MIN:
+		-->MAX:
+		-->CONCAT:
+		-->UPPER:
+		-->LOWER:
+		
+18,SQL JIONS : It is used to display the data from two are more tables
+		-->INNER JOIN; It print the matching values from both table 
+		-->LEFT JOIN; Print the all values from left side table, then mathched values from right side table
+		-->RIGHT JOIN; Print the all values from right side table, then matched values from left side table
+		-->FULL JOIN;  Print all rows from both table,if the matched values those rows will be merged,
+						if there is no match null values include 
+		-->SELF JOIN;  It’s used to compare rows within the same table,
+		-->CROSS JOIN; it print the all values (N number of rows and N number of colums)cros multification 3*3 =9
+		
+19,what is the difference between traditional warehouse and and snowflake
+                  traditional WH                                snowflake
+1,scalability ->scaling can be difficult and          ->it can easily enabiling scaling up and 
+				often expensive                          down
+2,cost        ->traditional wh separate cost          ->in snowflake there is now infracture cost
+                 we need to pay for that         
+3,semi-strecture->we need to use the ETL tools        ->in snowflake we dont need to use aney tools
+													      can process the data
+4,data insert and
+  retrive        ->we need to use ETL tools           ->we dont need to use aney tools we can use 
+														  "copy" command
+5,data backup ->we need to aditional storage       	  -> easily cloning,and no cost with cloning
+
+6,data recovery->data is delete,retrive               ->data is delete, it is easily retrive 
+                   is very difficult                    the data,time travel feature is available
+7,data sharing->it is very difficult to sharing-data  -> it can easily to share the data
+
+20,snowflake architecture  :there are 3 types of  architecture    
+
+    a,database storage:-->data will be stored in columnar format
+					   -->data will be stored in micro partitions
+					   -->the data objects stored by snowflake are not directly visible are        directly access by the customar 
+					   -->we can also define cluster key on large data for better performance 
+
+    b,query processing:-->This is the actual processing unit of snowflake
+					   -->snowflake process queries using virtual warehouse
+                       -->compute cost will be calculated on the basis of query execution time
+					      on virtual warehouse 
+					   -->vm also scale up and scale down automatically
+					   -->auto suspend and auto resume is available
+	c,cloud service:   -->collection of service that cordinate activities across snowflake
+					   -->This the brain of the snowflake
+					   -->Authentication and access control layer
+					   -->infracture management 
+					   -->metadata management
+					   -->security
+					   -->
+GIT: echo "# SQL-PRACTICE-" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin git@github.com:rajeshmandadi/SQL-PRACTICE-.git
+git push -u origin main
