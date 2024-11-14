@@ -1,0 +1,131 @@
+                                                                     SQL TASK
+1, JOINS IN SQL: In order to print the data in both table called joins
+2, TYPES OF JOINS:  There are 6 types of joins
+	INNER JOIN
+	LEFT OUTER JOIN
+	RIGHT OUTER JOIN
+	FULL JOIN
+	CROSS JOIN 
+	SELF JOIN
+3, INNERJOIN: Print the values for both tables, only for matched VALU
+	          FIRST CREATE TWO TABLES 
+           
+                    A                        B
+                  RAJESH                   RAJESH
+                  SATISH                   SATISH
+                  MASTAN                   SUDHAKAR 
+                  VAMSI                    VAMSI
+
+        WRITE QUERY:    SELECT A.NAME, B.NAME FROM A
+                          INNER JOIN B ON A.NAME = B.NAME
+        OUT PUT: A                                B
+                     RAJESH               RAJESH
+                     SATISH                 SATISH
+                       VAMSI                 VAMSI
+       COUNT:          3                             3
+4, LEFT OUTER JOIN:  It print the all values for left table, but
+                      only matched name for right side table 
+	FIRST CREATE TWO TABLES
+                    A                         B
+                  RAJESH                   RAJESH
+                  SATISH                    SATISH
+                  MASTAN                 SUDHAKAR 
+                  VAMSI                     VAMSI
+
+     WRITE QUERY:  SELECT A.NAME, B, NAME FROM A
+                            LEFT JOIN B ON A.NAME = B.NAME
+     OUT PUT:           A                       B
+                      RAJESH                  RAJESH
+                      SATISH                  SATISH
+                      MASTAN                  NULL
+                      VAMSI                   VAMSI
+     COUNT:               4                               
+
+5, RIGHT OUTER JOIN: It print the all values for right side tableonly                                             matched names for left side table
+	FIRST CREATE TWO TABLE 
+                            A                        B
+                           RAJESH                  RAJESH
+                           SATISH                  SATISH
+                           MASTAN                  SUDHAKAR
+                           VAMSI                   VAMSI
+    WRITE QUERY: SELECT A.NAME, B.NAME FROM A
+                 RIGHT JOIN B ON A.NAME = B.NAME
+    OUT PUT:              A                                B
+                         RAJESH                     RAJESH
+                         SATISH                       SATISH
+                         VAMSI                         VAMSI
+                         NULL                           SUDHAKAR
+    COUNT:                                                     4                  
+
+6, FULL JOIN: It print the all rows from both tables, if the matched values, if there is no matched    null values include
+
+	FIRST CREATE TWO TABLES
+                             A                       B
+                           RAJESH                  RAJESH
+                           SATISH                  SATISH
+                           MASTAN                  SUDHAKAR
+                           VAMSI                   VAMSI
+      WRITE QUERY: SELECT A.NAME, B.NAME FROM A
+                            FULL JOIN B ON A.NAME = B.NAME 
+
+      OUT PUT:            A                       B
+                        RAJESH                 RAJESH
+                        SATISH                 SATISH
+                        MASTAN                 NULL
+                        NULL                   SUDHAKAR
+                        VAMSI                  VAMSI
+
+          COUNT:            4                    4
+
+7, CROSS JOIN:  A CROSS JOIN combines all rows from TWO tables.
+                       (N number of rows and N number of columns multiply)
+
+	FIRST CREATE TWO TABLES
+                  A                      B
+				RAJESH               RAJESH
+                SATISH                 SATISH
+                MASTAN                 SUDHAKAR
+                VAMSI                  VAMSI
+
+    WRITE QUERY: SELECT * FROM TEST
+                               CROSS JOIN TEST1
+	OUT PUT:
+                   A                              B
+                 RAJESH                        RAJESH
+                 RAJESH                        SATISH
+                 RAJESH                        SUDAKAR 
+                 RAJESH                        VAMSI
+                 SATISH                        SATISH
+                 SATISH                        RAJESH
+                 SATISH                        SUDHAKAR 
+                 SATISH                        VAMSI
+
+8, SELF JOIN:  It print the When performing a self join, you assign different aliases to the same table to distinguish between its two instances.
+
+	CREATE ONE TABL
+                    A
+                 RAJESH
+                 SATISH
+                 SUDHAKAR
+                 MASTAN
+
+WRITE QUERY; SELECT e.NAME AS "Employee", m.NAME AS "Manager"
+                            FROM TEST1 AS e
+                           JOIN TEST1 AS m
+                           ON e.name = m.name
+OUT PUT;          EMPLOEE                      MANAGER
+                  RAJESH                        RAJESH
+                  SATISH                        SATISH 
+                  VAMSI                         VAMSI
+                  MASTAN                        MASTAN
+
+
+9,TASK: JOIN DEPRATEMNTS , EMPLOYEES AND JOBS TABLE TO GET MATCHED VALUES 
+
+QUERY: SELECT e."FIRST_NAME" AS "Employee Name",
+       e."LAST_NAME" AS "Manager Name",
+       d.department_name AS "Department Name",
+       j.job_title AS "Job Title"
+FROM EMPLOYEES AS e
+INNER JOIN DEPARTMENTS AS d ON e.department_id = d.department_id
+INNER JOIN JOBS AS j ON e.job_id = j.job_id;
