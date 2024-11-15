@@ -77,9 +77,9 @@
 				  ex;-->table-1 rajesh,satish,mastan
 				     -->Table-2 rajesh,vamsi,sudhakar
 					output;rajesh,
-		-->AND:
-		-->OR:
-		-->NOT:
+		-->AND: It used to both condition is true 
+		-->OR: 
+		-->NOT: not operator is used to particular row excepted,  
 		-->HAVING: HAVING is used to filter groups records.
 		-->GROUP_BY: 
 		-->ORDER BY: it print the output order wise (ASSENDING OR DESCNDING)
@@ -124,7 +124,7 @@
 
     a,database storage:-->data will be stored in columnar format
 					   -->data will be stored in micro partitions
-					   -->the data objects stored by snowflake are not directly visible are        directly access by the customar 
+					   -->the data objects stored by snowflake are not directly visible are directly access by the customar 
 					   -->we can also define cluster key on large data for better performance 
 
     b,query processing:-->This is the actual processing unit of snowflake
@@ -139,11 +139,14 @@
 					   -->infracture management 
 					   -->metadata management
 					   -->security
-					   -->
-GIT: echo "# SQL-PRACTICE-" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin git@github.com:rajeshmandadi/SQL-PRACTICE-.git
-git push -u origin main
+21,NEW REPO	-->GIT COMMAND
+    -->git init
+    -->git add README.md
+    -->git commit -m "first commit"
+    -->git branch -M main
+    -->git remote add origin git@github.com:rajeshmandadi/SQL-PRACTICE-.git
+    -->git push -u origin main
+22,OLD REPO    -->GIT COMMANDS
+	-->git add
+	-->git commit "first_commit"
+    -->git push -u origin main
