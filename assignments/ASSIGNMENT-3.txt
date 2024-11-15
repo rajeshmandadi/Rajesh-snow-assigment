@@ -1,0 +1,16 @@
+select 
+  LOAN_ID
+,LOAN_STATUS
+,PRINCIPAL
+,TERMS
+,EFFECTIVE_DATE
+,DUE_DATE
+,PAID_OFF_TIME
+,PAST_DUE_DAYS
+,EDUCATION
+,GENDER
+,AGE
+,case when age > 25 then 'Major' else 'Minor' end  as "Status"
+,case WHEN  age > 21 THEN 'Male' 
+WHEN  age > 18 THEN 'female'  end as "eligible"
+from LOAN_PAYMENT; 
