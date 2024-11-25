@@ -1,7 +1,16 @@
 *SNOWFLAKE CREDENTIALS:
-              ->account name:urb44929.us-east-1
+              ->account name:urb44929.us-east-1  
 			  ->username :Naidu
 			  ->password: Naidu@1234
+*AZURE CREDENTIALS:
+              ->User name:rjms9866@gmail.com
+			  ->password :Rajesh9866167759
+			  
+*AWS CREDENTIALS:
+			  ->User name:rjms9866@gmail
+			  ->password :Rajesh@9866167759
+			  
+	
 
 
 1,what is mean by snowflake?
@@ -228,24 +237,24 @@
 29,COPY COMMAND: It is used to load the data stages to tables(INTERNAL/EXTERNAL)
 30,COPY OPTIONS:
 	-->VALIDATION_MODE:
-	   1,returen_errors:it return error rows only, 
+	   1,RETURN_ERRORS:it return error rows only, 
 	   (ex: copy into table name
 	   from @stage name
 	   file_format =(type =csv field_delimiter=','skip_header=1)
 	   validation_mode = return_errors (or) return_all_records
-	   
+	   2,RETURN_ALL_ERRORS:
 	-->ON_ERRORS:
-	  1,CONTINUE:it used to skip the error records,
+	  1,CONTINUE:Skip the error records,and load remaining records 
 	    ex:ex: copy into table name
 	   from @stage name
 	   file_format =(type =csv field_delimiter=','skip_header=1)
 	   on_errors = continue
 	   
-	  2,SKIP_FILE:it is used to skip the error file
-	   ex:ex: copy into table name
-	   from @stage name
-	   file_format =(type =csv field_delimiter=','skip_header=1)
-	   on_errors = skip_file	
+	  2,SKIP_FILE:Skip the error file.
+	    ex: copy into table name
+	    from @stage name
+	    file_format =(type =csv field_delimiter=','skip_header=1)
+	    on_errors = skip_file	
       3,SIZE_LIMIT:	Limits the maximum size of the staged data being loaded.   
 	    ex:ex:ex: copy into table name
 	    from @stage name
@@ -256,6 +265,165 @@
 			from @stage name
 			file_format =(type = csv field_delimiter=','skip_header=1)
 			force = TRUE
-	  5,
+	  5,TRUNCATECOLUMNS :tuncatedcolumns and enforce_length both are same,The table definaion is wrong, used to truncatecolums = true 
+	    ex:copy into table name
+			from @stage name
+			file_format =(type = csv field_delimiter=','skip_header=1)
+			TRUNCATECOLUMNS = TRUE
+	  6,ENFORCE_LENGTH: tuncatedcolumns and enforce_length both are same,The table definaion is wrong, used to truncatecolums = true
 
+        ex:copy into table name
+			from @stage name
+			file_format =(type = csv field_delimiter=','skip_header=1)
+			ENFORCE_LENGTH = False
+	  7,PURG:it is used to  load the data (stage to table) after automatically remove the files in stage
+	  ex:copy into table name
+			from @stage name
+			file_format =(type = csv field_delimiter=','skip_header=1)
+			FURG = TRUE
+			
+31,HOW TO WORK SEMI-STRECTURE DATA AND HOW TO CONVERT TO TABLE FORMAT?
+        HOW TO WORK ON JSON FORMAT TO TABLE FORMAT
+		
+    --CREATE EXTERNAL_STAGE--
+    1,CREATE OR REPLACE STAGE RAJEHS
+      S3 URL
+
+    2,LIST @STAGE NAME
+
+    3,CREATE TABLE JSON (RAW_FILE VARIANT)
+--COPY DATA STAGE TO TABLE--
+
+    4,COPY INTO JSON
+    FROM @STAGENAME 
+    FILE_FORMAT = (TYPE = JSON)
+
+--RETRIEVE THE DATA JSON TO TABLE FORMAT--
+    5,SELECT $1:FIRST_NAME,
+             $1:LAST_NAME,
+             $1:JOB_TITLE,
+             $1:SALARY,
+             $1:ID
+             FROM JSON
+  ---STORE THE DATA INTO NEW  TABLE--
+
+       CREATE TABLE CSV_TABLE AS
+       (
+       ,SELECT $1:FIRST_NAME,
+             $1:LAST_NAME,
+             $1:JOB_TITLE,
+             $1:SALARY,
+             $1:ID
+             FROM JSON
+       )
+    
+    SELECT * FROM CSV_TABLE
+32,HOW TO WORK ON ERROR RECORDS
+
+    
+	CREATE OR REPLACE EXTERNAL_STAGE
+	S3 URL
 	
+	
+	LIST @EXTERNAL_STAGE
+	
+	CREATE OR REPLACE TABLE ORDERS (
+    ORDER_ID VARCHAR(30),
+    AMOUNT INT,
+    PROFIT INT,
+    QUANTITY INT,
+    CATEGORY VARCHAR(30),
+    SUBCATEGORY VARCHAR(30));
+
+
+	COPY INTO ORDERS 
+	FROM @EXTERNAL_STAGE
+	FILE_FORMAT = (TYPE =CSV FIELD_DELIMITER SKIP_HEADER=1)
+	VALIDATION_MODE = RETURN_ERRORS
+	
+	--CREATE REJECTED RECORDS TABLE AND LOAD THE  REJECTED RECORDS
+	CREATE OR REPLACE (REJECTED_RAJESH) AS
+	SELECT REJECTED_RECORDS FROM TABLE (RESULT_SCAN(LAST_QUERY_ID()));
+	
+	--COPY INTO WITHOUT ERROR FILES IN ORDERS TABLE--
+	
+	COPY INTO TALE NAME
+	FROM @EXTERNAL_STAGE NAME
+	FILE_FORMAT =(TYPE=CSV FILE_DELIMITER=','SKIP_HEADER=1)
+	ON_ERRORS = CONTINUE
+	SELECT * FROM REJECTED_RECORD
+	--SPLIT THE ERROR RECORDS AND LOAD THE TABLE--
+
+	CREATE OR RELACE TABLE REJECTED2 AS 
+	SELECT SPLIT_PART(REJECTED_RECORD,',',1) AS ORDER_ID,
+	       SPLIT_PART(REJECTED_RECORD,',',2) AS AMOUNT,
+		   SPLIT_PART(REJECTED_RECORD,',',3) AS PROFIT,
+		   SPLIT_PART(REJECTED_RECORD,',',4) AS QUANTITY,
+		   SPLIT_PART(REJECTED_RECORD,',',5) AS CATEGORY,
+		   SPLIT_PART(REJECTED_RECORD,',',6) AS SUBCATEGORY
+		   FROM REJECTED1;
+	-- UPDATE THE ERROR RECORDS--	   
+	UPDATE REJECTED2 
+       SET PROFIT = 1000
+    WHERE PROFIT = 'ONE THOUSEND'
+
+    UPDATE REJECTED2
+      SET PROFIT = 220
+    WHERE PROFIT = 'TWO HUNDRED TWENTY'
+    --FINALLY LOAD THE DATA INTO ORDERS TABLE 
+
+  INSERT INTO ORDERS
+   (SELECT * FROM REJECTED2)  
+   
+   
+33,HOW TO INTEGRATED AWS TO SNOWFLAKE ?
+
+1. Create AWS s3 bucket and load the files 
+2. Create IAM Roles to access the files in AWS 
+3. Create S3 integration 
+4. Describe S3 integration and take the user ARN and External ID 
+5. Modify the trust policy to add the ARN and eternal ID 
+6. Create a stage (AWS Url) 
+7. list to see how many files are there 
+8. Create a table 
+9. Perform copy to load the data (file foramt , copy options )
+
+34,what is mean by snowfpipe --> snowpipe means continue dataflow and continue data intigration,
+AWS,AZURE,GCP cloud bsed flatform
+
+ 
+1. Create AWS s3 bucket and load the files 
+2. Create IAM Roles to access the files in AWS 
+3. Create S3 integration 
+4. Describe S3 integration and take the user ARN and External ID 
+5. Modify the trust policy to add the ARN and eternal ID 
+6. Create a stage (AWS Url) 
+7. list to see how many files are there 
+8. Create a table 
+9. Perform copy to load the data (file foramt , copy options )  to test 
+10. Create a pipe and describe the pipe and configure pipe ARN into s3 properties as SQS
+11. Resume/pause refresh a pipe  
+
+35,WHAT IS MEAN BY TIME_TRAVEL -->we can retrive the data particular period of time,point in time recovery,in order to get histarical data (ex:by default data delete or modify we can use to retrive the data)
+
+36,HOW MANY WAYS WE CAN RETRIEVE THE DATA -->There are 3 ways we can retrive the data 
+         -->default retention period is 1 day
+		 -->you can set up to 90 days 
+		 ex:select * from (table-name) data_retention_time_in_days =30,
+		 
+         -->offset-->it is used to retrive the data just 1,2 minutes back data only
+		    
+		 ex:create or replace table-name
+		    (
+		    select * from(able-name) at (offset => -60*1.5)
+		 -->queryid --> it is used to retrive the data with query id
+		 create or replace table table-name (
+		 ex:select * form (table-name) before (statement => ueryid))
+		 
+		 -->timestamp-->it is used to retrive the data particular period of time (use time)
+		 ex: create or replace table-name
+		     (
+			 select * from table-name before (timestamp => date,time ::timestamp))
+
+
+
