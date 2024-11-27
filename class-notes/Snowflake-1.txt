@@ -407,7 +407,14 @@ AWS,AZURE,GCP cloud bsed flatform
 35,WHAT IS MEAN BY TIME_TRAVEL -->we can retrive the data particular period of time,point in time recovery,in order to get histarical data (ex:by default data delete or modify we can use to retrive the data)
 
 36,HOW MANY WAYS WE CAN RETRIEVE THE DATA -->There are 3 ways we can retrive the data 
-         -->default retention period is 1 day
+         -->types of werehose editions and retention period
+         -->default retention period is 1 day -->(standard edition)
+		 -->default retention period is 90 day -->(enterrice edition)
+         -->default retention period is 90 day -->(business critical edition)
+         -->default retention period is 90 day -->(virtual edition)
+		 -->After 90 days retention period is complete (file go to file safe 7 days retention period)
+		 
+		 -->default retention period is 1 day
 		 -->you can set up to 90 days 
 		 ex:select * from (table-name) data_retention_time_in_days =30,
 		 
@@ -426,4 +433,43 @@ AWS,AZURE,GCP cloud bsed flatform
 			 select * from table-name before (timestamp => date,time ::timestamp))
 
 
-
+37,TYPES OF TABLES ;There are 3 types of tables in snowflake
+                     
+		-->permanent table
+		    -->Default table in snowflake
+			-->these are the refgular and comman table in snowflake  
+		    -->time travel retention period is 0 to 90 days (permanent table)
+            -->file safe feature is avalable 7 days sotored
+			-->We can't convert aney type of table to other table
+			-->syntax to create permanent table
+			    syntax:create table tablename (id int)
+		-->transient table
+			-->It is also similar to permanent table
+			-->we can create transient database and transiant schema
+		    -->we canot create permanent table name to transient table name
+	     	-->We can't convert aney type of table to other table
+			-->time travel retention period is 0 to 1 day only (transient table)
+			-->ther is no file safe feature in transient table
+			-->sysntax to create a transiant table(create transiant table tablename(id number)
+		-->temporary table
+			-->table exist only in this session
+			    (ex:once you can lougt and login table is deleted no recovery options )
+			-->canot create temporary database and temporary schema
+			-->We can't convert aney type of table to other table
+			-->
+			-->we can create permanent table name to temporary table name 
+			   (data fetched to temporary table)
+			-->time travel retention period is 0 to 1 day only (temporary table)
+			-->there is no file safe feature in temporary table
+			-->table exist only in this session 
+				(ex:once you can lougt and login table is deleted no recovery options ) 
+            -->sysntax for temporary table (create temporary table tablename(id int)
+			
+			
+38,ZERO COPY CLONING IN SNOWFLAKE:
+            -->it means take backup of the TABLE,OR,SCHEMAS,OR,DATABASE
+			-->we can take multiple copies of data,with no aditional cost that means "zero copy"
+			-->the cloned objects is independent from original
+			query;(create or replace table source tablename
+			       clone destination table name)
+			-->works with time travel also available
