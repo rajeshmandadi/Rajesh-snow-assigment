@@ -77,7 +77,7 @@
 
 16,set operators  -->the sql set operations are used to combine the two or more sql select statement there 
 					are four types
-		-->UNION;it is used to display two more tables unique values only
+		-->UNION;it is used to display two OR more tables unique values only
 				  ex;-->table-1 rajesh,satish,mastan
 				     -->Table-2 rajesh,vamsi,sudhakar
 					 output;rajesh,satish,mastan,vamsi,sudhakar
@@ -389,7 +389,7 @@
 9. Perform copy to load the data (file foramt , copy options )
 
 34,what is mean by snowfpipe --> snowpipe means continue dataflow and continue data intigration,
-AWS,AZURE,GCP cloud bsed flatform
+AWS,AZURE,GCP cloud bsed flatform TO snowflake
 
  
 1. Create AWS s3 bucket and load the files 
@@ -406,10 +406,10 @@ AWS,AZURE,GCP cloud bsed flatform
 
 35,WHAT IS MEAN BY TIME_TRAVEL -->we can retrive the data particular period of time,point in time recovery,in order to get histarical data (ex:by default data delete or modify we can use to retrive the data)
 
-36,HOW MANY WAYS WE CAN RETRIEVE THE DATA -->There are 3 ways we can retrive the data 
+36,HOW MANY WAYS WE CAN RETRIEVE THE DATA -->There are 3 ways we can retrive the histarical data,
          -->types of werehose editions and retention period
          -->default retention period is 1 day -->(standard edition)
-		 -->default retention period is 90 day -->(enterrice edition)
+		 -->default retention period is 90 day -->(enterprice edition)
          -->default retention period is 90 day -->(business critical edition)
          -->default retention period is 90 day -->(virtual edition)
 		 -->After 90 days retention period is complete (file go to file safe 7 days retention period)
@@ -418,16 +418,16 @@ AWS,AZURE,GCP cloud bsed flatform
 		 -->you can set up to 90 days 
 		 ex:select * from (table-name) data_retention_time_in_days =30,
 		 
-         -->offset-->it is used to retrive the data just 1,2 minutes back data only
+-->offset-->it is used to retrive the data just 1,2 minutes back data only
 		    
 		 ex:create or replace table-name
 		    (
 		    select * from(able-name) at (offset => -60*1.5)
-		 -->queryid --> it is used to retrive the data with query id
+-->queryid --> it is used to retrive the data with query id
 		 create or replace table table-name (
 		 ex:select * form (table-name) before (statement => ueryid))
 		 
-		 -->timestamp-->it is used to retrive the data particular period of time (use time)
+-->timestamp-->it is used to retrive the data particular period of time (use time)
 		 ex: create or replace table-name
 		     (
 			 select * from table-name before (timestamp => date,time ::timestamp))
@@ -456,7 +456,6 @@ AWS,AZURE,GCP cloud bsed flatform
 			    (ex:once you can lougt and login table is deleted no recovery options )
 			-->canot create temporary database and temporary schema
 			-->We can't convert aney type of table to other table
-			-->
 			-->we can create permanent table name to temporary table name 
 			   (data fetched to temporary table)
 			-->time travel retention period is 0 to 1 day only (temporary table)
@@ -473,3 +472,107 @@ AWS,AZURE,GCP cloud bsed flatform
 			query;(create or replace table source tablename
 			       clone destination table name)
 			-->works with time travel also available
+			
+39,WHAT IS MEAN BY WORKING WITH TASK:
+            -->we can schedule the task particular period of time execute the task
+			-->we can schedule sql queries and store procedure 
+			-->root task also created 
+			-->child task also created 
+			ex:CREATE TABLE TASK_TABLE
+				(
+				ID INT AUTOINCREMENT START -1   INCREMENT -1,
+				NAME VARCHAR (20) DEFAULT 'RAJESH',
+				LOAD_TIME TIMESTAMP
+				)
+
+				SELECT * FROM TASK_TABLE
+
+				----------------CREATE TASK--------------------
+
+				CREATE OR REPLACE TASK TASK_1
+				 WAREHOUSE =COMPUTE_WH
+				 SCHEDULE = '1 MINUTE'
+				 AS 
+				 INSERT INTO  TASK_TABLE(LOAD_TIME)
+				 VALUES(CURRENT_TIMESTAMP);
+				 
+40,WHAT IS MEAN BY STREAMS IN SNOWFLAKE:
+		-->In Snowflake, a stream is a mechanism used to track changes to data in a table
+		-->CDC means continue data capture 
+		-->streams also used to copy the data source table to destination table updated data only
+        -->there are 3 types of snowflake streams
+		1,STANDARD STREAMS::a standard srtream track all DML changes,insert,update,delete (including table truncate )
+		 (ex;CREATE STREAM STREAM NAME ON TABLE NAME 
+		 
+		2,APPEND-ONLY  STREAMS::
+		    -->Tracks only inserted rows.
+			-->Changes from updates or deletes will not appear in this stream
+		  (ex:CREATE OR REPLACE STREAM STREAM NAME ON TABLE TABLE NAME 
+		          APPEND_ONLY = TRUE
+		3,INSERT-ONLY STREAMS::supported only external tables only,insert row only,they do not record delete operations
+		   (EX:CREATE OR REPLACE STREAM STREAM NAME ON TABLE TABLE NAME
+		        INSERT_ONLY = TRUE
+				
+				
+41,DATA SHARING IN SNOWFLAKE;
+			-->Data sharing is very securely
+			-->data sharing  only between the snowfalke account 
+			-->in snowflake users data sharing directly create shared object
+			-->for non-snowflake users,create reader account share the data
+			-->single share object multiple consumeres share the data
+    THIS IS SOURCE ACCOUNT:
+            EX:CREATE OR REPLACE DATABASE DATA_SHARING
+			CREATE OR REPLACE STAGE EXTERNAL_STAGE
+			url='s3://bucketsnowflakes3';
+
+			LIST @EXTERNAL_STAGE
+
+			CREATE OR REPLACE TABLE ORDERS (
+			ORDER_ID	VARCHAR(30)
+			,AMOUNT	NUMBER(38,0)
+			,PROFIT	NUMBER(38,0)
+			,QUANTITY	NUMBER(38,0)
+			,CATEGORY	VARCHAR(30)
+			,SUBCATEGORY	VARCHAR(30))   
+
+			DESC TABLE ORDERS
+
+			COPY INTO ORDERS
+			FROM @EXTERNAL_STAGE 
+			FILE_FORMAT =(TYPE =CSV,FIELD_DELIMITER =',',SKIP_HEADER =1)
+			PATTERN ='.*OrderDetails.*'
+
+
+			CREATE OR REPLACE SHARE SHARED_OBJECT
+
+			DESC SHARE SHARED_OBJECT 
+
+
+
+			GRANT USAGE ON DATABASE DATA_SHARING TO SHARE SHARED_OBJECT  
+
+			GRANT USAGE ON SCHEMA DATA_SHARING.PUBLIC  TO SHARE SHARED_OBJECT; 
+
+
+			GRANT SELECT ON TABLE ORDERS TO SHARE SHARED_OBJECT   
+
+
+			SHOW GRANTS TO SHARE SHARED_OBJECT
+
+			DESCRIBE ACCOUNT;
+
+			SELECT * FROM ORDERS
+
+			ALTER SHARE SHARED_OBJECT ADD ACCOUNT=TFAYGCD.XAB47775(DESTINATION ACCOUNT ID)
+
+    DESTINATION ACCOUNT:
+					EX:SHOW  SHARES
+
+
+					DESC SHARE HBYVDNS.SFB82631.RAJESH_OBJECT
+
+					CREATE OR REPLACE DATABASE RAJESH_DB FROM SHARE HBYVDNS.SFB82631.RAJESH_OBJECT(SOURCE ACCOUNT ID)
+					
+					SHOW TABLES
+					SELECT * FROM ORDERS
+
