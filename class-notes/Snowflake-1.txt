@@ -10,7 +10,9 @@
 			  ->User name:rjms9866@gmail
 			  ->password :Rajesh@9866167759
 			  
-	
+*How to connect snowfalke cli:-->open command prompt or gitbash
+							  -->snowsql -a account name -u username enterprice
+							  -->type password
 
 
 1,what is mean by snowflake?
@@ -65,7 +67,8 @@
 	   -->limit 1 means display one (row) or (colum)
 	   -->offset means display the after 5 rows (ex, 6)
 
-12,Window functions:row_numbers-->it is unique values
+12,Window functions:
+    -->row_numbers:it display only unique values
 	-->rank :two rows have same vales, rank also same,but next rank also skip accordingly
 	-->dense_rank :two rows are same values,rank also same, but next rank is not skipped
 	-->lag :it is used to display crrent row to previous row
@@ -75,8 +78,7 @@
 14,CASE	-->if,else
 15,CTE  -->comman table expression
 
-16,set operators  -->the sql set operations are used to combine the two or more sql select statement there 
-					are four types
+16,set operators  -->the sql set operations are used to combine the two or more table  sql statement 	there are four types
 		-->UNION;it is used to display two OR more tables unique values only
 				  ex;-->table-1 rajesh,satish,mastan
 				     -->Table-2 rajesh,vamsi,sudhakar
@@ -86,7 +88,10 @@
 				     -->Table-2 rajesh,vamsi,sudhakar
 					output;rajesh,rajesh,satish,mastan,vamsi,sudhakar
 					
-		-->minuse;
+		-->minuse;minus remove the duplicate rows
+		          ex:select * from table 1
+				     minuse
+					 select * from table 2
 		-->intersect;it  display the both table common values
 				  ex;-->table-1 rajesh,satish,mastan
 				     -->Table-2 rajesh,vamsi,sudhakar
@@ -155,7 +160,7 @@
 						   
        
        
-		-->FULL JOIN;  Print all rows from both table,if the matched values those rows will be merged,if there is no match null values include 
+		-->FULL JOIN;  Print all rows from both table,if the matched values those rows will be merged,if there is not match null values include 
 		            EX:SELECT E.FIRST_NAME,
 					   D.FIRST_NAME
 					   FROM EMPLOYEES E
@@ -176,7 +181,7 @@
 2,cost        ->traditional wh separate cost          ->in snowflake there is now infracture cost
                  we need to pay for that         
 3,data insert and
-  retrive        ->we need to use ETL tools           ->we dont need to use aney tools we can use 
+  retrive        ->we need to use ETL tools           ->we don't need to use aney tools we can use 
 														  "copy" command
 4,data backup ->we need to aditional storage       	  -> easily cloning,and no cost with cloning
 
@@ -192,9 +197,7 @@
 					   -->we can also define cluster key on large data for better performance 
 
     b,query processing:-->This is the actual processing unit of snowflake 
-					   -->snowflake process queries using virtual warehouse
-                       -->compute cost will be calculated on the basis of query execution time
-					      on virtual warehouse 
+					   -->snowflake process queries using virtual warehouse 
 					   -->vm also scale up and scale down automatically
 					   -->auto suspend and auto resume is available
 	c,cloud service:   -->collection of service that cordinate activities across snowflake
@@ -232,8 +235,9 @@
 27,stages in snowflake:They are two types of stages in snowflake 
 	-->INTERNAL STAGE: we can load the data local system to snowflake, using to internal stages
 	-->EXTERNAL STAGE: we can load the data cloud to snowflake, used to  external stage
-28,PUT COMMAND:Put command is used to load the data into (internal-stage),put command only work 
-				CLI,it not work to GUI,
+28,PUT COMMAND:Put command is used to load the data into (internal-stage),put command only work CLI,it not work to GUI,
+
+
 29,COPY COMMAND: It is used to load the data stages to tables(INTERNAL/EXTERNAL)
 30,COPY OPTIONS:
 	-->VALIDATION_MODE:
@@ -265,7 +269,7 @@
 			from @stage name
 			file_format =(type = csv field_delimiter=','skip_header=1)
 			force = TRUE
-	  5,TRUNCATECOLUMNS :tuncatedcolumns and enforce_length both are same,The table definaion is wrong, used to truncatecolums = true 
+	  5,TRUNCATECOLUMNS :tuncated columns and enforce_length both are same,The table definaion is wrong, used to truncate 	 colums = true 
 	    ex:copy into table name
 			from @stage name
 			file_format =(type = csv field_delimiter=','skip_header=1)
@@ -378,25 +382,69 @@
    
 33,HOW TO INTEGRATED AWS TO SNOWFLAKE ?
 
-1. Create AWS s3 bucket and load the files 
-2. Create IAM Roles to access the files in AWS 
-3. Create S3 integration 
-4. Describe S3 integration and take the user ARN and External ID 
-5. Modify the trust policy to add the ARN and eternal ID 
-6. Create a stage (AWS Url) 
-7. list to see how many files are there 
-8. Create a table 
-9. Perform copy to load the data (file foramt , copy options )
+	 --> Create AWS s3 bucket and load the files 
+	 --> Create IAM Roles to access the files in AWS 
+	 --> Create S3 integration 
+	 --> Describe S3 integration and take the user ARN and External ID 
+	 --> Modify the trust policy to add the ARN and eternal ID 
+	 --> Create a stage (AWS Url) 
+	 --> list to see how many files are there 
+	 --> Create a table 
+	 --> Perform copy to load the data (file foramt , copy options )
+34,HOW TO INTEGRATED AZURE TO SNOWFLAKE?
+	 -->go to azure account and select storage account
+	 -->newly create storage account 
+	 -->goto storage account select container 
+	 -->create container and upload files
+	 -->go to snowflake account create storage integration
+	 -->CREATE OR REPLACE STORAGE INTEGRATION SATISH_INT
+				TYPE = EXTERNAL_STAGE1
+			STORAGE_PROVIDER = AZURE
+			ENABLED = TRUE
+			AZURE_TENANT_ID ='a256b292-f2df-4178-81cf-37b48d006e4e'(microsoft entra id)
+			STORAGE_ALLOWED_LOCATIONS ='azure://azuretosnowfale.blob.core.windows.net/mastancontainer'
+     --> go to azure account select container right side 3dots click select container 		properties copy url
+	 -->select azure account search bar select type microsoft entra id copy id past it 
+     -->create storage integration
+	 -->desc stage copy azure_tenent_id go to azure account 
+	 -->select iam role select add assign role click on
+	 -->select role storage blob data container click on enter next button
+     -->select members 	copy this one sq89bwsnowflakepacint_1733144833390 create or select 
+	 -->copy azure_consent_url https://login.microsoftonline.com/a256b292-f2df-4178-81cf-37b48d006e4e/oauth2/authorize?client_id=278c2e15-a3ed-4b5e-bf1f-dfec9c67b548&response_type=code past new browser enter
+	 -->go to snowfalke create file format 
+	    EX:CREATE OR REPLACE FILE FORMAT AZURE_DATABASE.FILE_FORMAT.CSV_FILE
+			TYPE = CSV
+			FIELD_DELIMITER = ','
+			SKIP_HEADER = 1
+			EMPTY_FIELD_AS_NULL = TRUE
+	 -->create external_stage 
+	    EX:CREATE OR REPLACE STAGE AZURE_DATABASE.EXTERNAL_STAGE.STAGE_1
+			URL = 'azure://azuretosnowfale.blob.core.windows.net/mastancontainer'
+			STORAGE_INTEGRATION = SATISH_INT
+			FILE_FORMAT = AZURE_DATABASE.FILE_FORMAT.CSV_FILE
+	  -->create table table name
+	     EX:CREATE OR REPLACE TABLE AZURE_TABLE1(
+				ID INT,
+				FIRST_NAME VARCHAR(20),
+				LAST_NAME VARCHAR(20),
+				EMAIL STRING,
+				LOCATION VARCHAR(30),
+				DEPARTMENT VARCHAR(30)
+				)
+	  -->copy the data stages to tables
+	      EX:copy into table name
+		     from @stage name
+	  -->select * from table name
 
-34,what is mean by snowfpipe --> snowpipe means continue dataflow and continue data intigration,
-AWS,AZURE,GCP cloud bsed flatform TO snowflake
+
+34,what is mean by snowfpipe --> snowpipe means continue dataflow and continue data intigration,AWS,AZURE,GCP cloud bsed flatform TO snowflake
 
  
 1. Create AWS s3 bucket and load the files 
 2. Create IAM Roles to access the files in AWS 
 3. Create S3 integration 
 4. Describe S3 integration and take the user ARN and External ID 
-5. Modify the trust policy to add the ARN and eternal ID 
+5. Modify the trust policy to add the ARN and external ID 
 6. Create a stage (AWS Url) 
 7. list to see how many files are there 
 8. Create a table 
@@ -411,7 +459,7 @@ AWS,AZURE,GCP cloud bsed flatform TO snowflake
          -->default retention period is 1 day -->(standard edition)
 		 -->default retention period is 90 day -->(enterprice edition)
          -->default retention period is 90 day -->(business critical edition)
-         -->default retention period is 90 day -->(virtual edition)
+         -->default retention period is 90 day -->(virtual private)	 
 		 -->After 90 days retention period is complete (file go to file safe 7 days retention period)
 		 
 		 -->default retention period is 1 day
@@ -422,7 +470,7 @@ AWS,AZURE,GCP cloud bsed flatform TO snowflake
 		    
 		 ex:create or replace table-name
 		    (
-		    select * from(able-name) at (offset => -60*1.5)
+		    select * from(table-name) at (offset => -60*1.5)
 -->queryid --> it is used to retrive the data with query id
 		 create or replace table table-name (
 		 ex:select * form (table-name) before (statement => ueryid))
@@ -437,7 +485,7 @@ AWS,AZURE,GCP cloud bsed flatform TO snowflake
                      
 		-->permanent table
 		    -->Default table in snowflake
-			-->these are the refgular and comman table in snowflake  
+			-->we can create table,schema,database  
 		    -->time travel retention period is 0 to 90 days (permanent table)
             -->file safe feature is avalable 7 days sotored
 			-->We can't convert aney type of table to other table
@@ -446,32 +494,31 @@ AWS,AZURE,GCP cloud bsed flatform TO snowflake
 		-->transient table
 			-->It is also similar to permanent table
 			-->we can create transient database and transiant schema
-		    -->we canot create permanent table name to transient table name
+		    -->we can't create permanent table name to transient table name
 	     	-->We can't convert aney type of table to other table
 			-->time travel retention period is 0 to 1 day only (transient table)
 			-->ther is no file safe feature in transient table
 			-->sysntax to create a transiant table(create transiant table tablename(id number)
 		-->temporary table
 			-->table exist only in this session
-			    (ex:once you can lougt and login table is deleted no recovery options )
-			-->canot create temporary database and temporary schema
+			-->once you can logout and login table is deleted no recovery options )
+			-->we can't create temporary database and temporary schema
 			-->We can't convert aney type of table to other table
 			-->we can create permanent table name to temporary table name 
 			   (data fetched to temporary table)
 			-->time travel retention period is 0 to 1 day only (temporary table)
 			-->there is no file safe feature in temporary table
 			-->table exist only in this session 
-				(ex:once you can lougt and login table is deleted no recovery options ) 
-            -->sysntax for temporary table (create temporary table tablename(id int)
+            -->syntax for temporary table (create temporary table tablename(id int)
 			
 			
 38,ZERO COPY CLONING IN SNOWFLAKE:
-            -->it means take backup of the TABLE,OR,SCHEMAS,OR,DATABASE
-			-->we can take multiple copies of data,with no aditional cost that means "zero copy"
+            -->it means take backup of the TABLE,SCHEMAS,DATABASE
+			-->we can take multiple copies of data,with no aditional cost that means "zero copy clone"
 			-->the cloned objects is independent from original
-			query;(create or replace table source tablename
-			       clone destination table name)
 			-->works with time travel also available
+			(create or replace table source tablename
+			       clone destination table name)
 			
 39,WHAT IS MEAN BY WORKING WITH TASK:
             -->we can schedule the task particular period of time execute the task
@@ -497,11 +544,10 @@ AWS,AZURE,GCP cloud bsed flatform TO snowflake
 				 VALUES(CURRENT_TIMESTAMP);
 				 
 40,WHAT IS MEAN BY STREAMS IN SNOWFLAKE:
-		-->In Snowflake, a stream is a mechanism used to track changes to data in a table
-		-->CDC means continue data capture 
-		-->streams also used to copy the data source table to destination table updated data only
+		-->In Snowflake, a stream is used to track changes to data in a table
+		-->CDC means continue data capture
         -->there are 3 types of snowflake streams
-		1,STANDARD STREAMS::a standard srtream track all DML changes,insert,update,delete (including table truncate )
+		1,STANDARD STREAMS::a standard stream track all DML changes,insert,update,delete (including table truncate )    
 		 (ex;CREATE STREAM STREAM NAME ON TABLE NAME 
 		 
 		2,APPEND-ONLY  STREAMS::
@@ -516,7 +562,8 @@ AWS,AZURE,GCP cloud bsed flatform TO snowflake
 				
 41,DATA SHARING IN SNOWFLAKE;
 			-->Data sharing is very securely
-			-->data sharing  only between the snowfalke account 
+			-->data sharing  only between the snowfalke account
+			-->with in the region and another region also data sharing is posible
 			-->in snowflake users data sharing directly create shared object
 			-->for non-snowflake users,create reader account share the data
 			-->single share object multiple consumeres share the data
@@ -575,4 +622,11 @@ AWS,AZURE,GCP cloud bsed flatform TO snowflake
 					
 					SHOW TABLES
 					SELECT * FROM ORDERS
+
+					// How to share complete schema
+					GRANT SELECT ON ALL TABLES IN SCHEMA CUST_DB.CUST_TBLS TO SHARE CUST_DATA_SHARE;
+
+					// How to share complete database
+					GRANT SELECT ON ALL TABLES IN DATABASE CUST_DB TO SHARE CUST_DATA_SHARE;
+
 
