@@ -226,12 +226,32 @@
 	-->virtual private
 25,Types of virtual warehouse sizes:XS,S,M,L,XL,2XL,3XL,4XL,5XL,6XL,
 
-26,snowflake roles -->ACCOUNTADMIN
-				   -->SECURITYADMIN
-				   -->SYSADMIN
-				   -->USERADMIN
-				   -->PUBLIC 
-				   -->ORGADMIN
+26,43,TYPES OF ROLES IN SNOWFLAKE :-->there are 2 types of roles 
+	1,SYSTEM DEFINE ROLES:system define roles they are 6 types
+		-->ACCOUNTADMIN
+             -->it is the top level role in the system
+			 -->accountadmin can manage account level setting,users,roles,billing,and all  database object
+			 -->can enable multi factor authenticaton only accountadmin
+			 
+		-->SECURITYADMIN
+		     -->Securityadmin manage security-related tasks such as creating and managing users, roles, and granting/revoking privileges.
+			 -->Cannot manage account-level settings
+		-->SYSADMIN
+		     -->Responsible for managing database objects and operations,such as creating databases, schemas, tables, and managing data.
+			 -->Does not have user or role management capabilities.
+		-->USERADMIN
+			 -->this roles is granted the create users and create roles security previllege 
+			 -->can create users and roles in the account
+		-->PUBLIC                     
+			 -->Default role assigned to all users		 
+			 -->Provides minimal, default-level access
+		-->ORGADMIN
+		     -->role that manages operations that organization level,more specifically role
+			 -->can create account in the organization 
+			 -->can view usage information across the organization 
+	2,CUSTOMROLE:
+			 -->customrole can be created by useradmin role
+			 -->by default a newly-created role is not assigned to any user,not granted
 27,stages in snowflake:They are two types of stages in snowflake 
 	-->INTERNAL STAGE: we can load the data local system to snowflake, using to internal stages
 	-->EXTERNAL STAGE: we can load the data cloud to snowflake, used to  external stage
@@ -629,4 +649,69 @@
 					// How to share complete database
 					GRANT SELECT ON ALL TABLES IN DATABASE CUST_DB TO SHARE CUST_DATA_SHARE;
 
+
+42,WHAT IS MEAN BY ACCESS CONTROL IN SNOWFLAKE?
+		
+		-->access control determine who can access the database object and perform operations on specific object in snowfalke
+43,TYPES OF ROLES IN SNOWFLAKE :-->there are 2 types of roles 
+		-->system defined role
+		-->custom role
+		
+44,WHAT IS MEAN BY DATAMASKING IN SNOWFLAKE?
+        -->Data masking in Snowflake is a security feature that protects sensitive data by obscuring or transforming it for users who lack the necessary permissions. It allows organizations to control access to sensitive information while enabling authorized users to view the data in its original form.
+		
+		EX:CREATE OR REPLACE TABLE RAJESH(
+				ID INT,
+				NAME VARCHAR,
+				PHONE VARCHAR,
+				EMAIL VARCHAR
+				)
+            INSERT INTO RAJESH(ID,NAME,PHONE,EMAIL) VALUES
+				(1,'RAJESH','986-616-7759','RAJESH@GMAIL.COM'),
+				(1,'SATISH','986-616-7758','SATISH@GMAIL.COM'),
+				(1,'MASTAN','986-616-7757','MASTAN@GMAIL.COM'),
+				(1,'GOKUL','986-616-7756','GOKUL@GMAIL.COM')
+
+
+				GRANT USAGE ON DATABASE AZURE_DATABASE TO ROLE RAJESH_FULL;
+				GRANT USAGE ON DATABASE AZURE_DATABASE TO ROLE RAJESH_MASK;
+
+				GRANT USAGE ON SCHEMA PUBLIC TO ROLE RAJESH_FULL;
+				GRANT USAGE ON SCHEMA PUBLIC TO ROLE RAJESH_MASK
+
+
+				GRANT SELECT ON TABLE MASK_TABLE TO ROLE RAJESH_FULL;
+				GRANT SELECT ON  TABLE MASK_TABLE TO ROLE RAJESH_MASK
+
+				GRANT ROLE RAJESH_MASK TO USER NAIDU;
+				GRANT ROLE RAJESH_FULL TO USER NAIDU;
+
+				CREATE OR REPLACE MASKING POLICY NAME
+				AS (VAL VARCHAR) RETURNS VARCHAR ->
+				 CASE
+				   WHEN CURRENT_ROLE ()IN ('RAJESH_FULL','ACCOUNTADMIN') THEN VAL
+				   ELSE CONCAT(LEFT(VAL,2),'###-###-####')
+				   END;
+
+				ALTER TABLE IF EXISTS RAJESH MODIFY COLUMN NAME
+				SET MASKING POLICY NAME
+
+
+				ALTER TABLE IF EXISTS RAJESH MODIFY COLUMN EMAIL
+				UNSET MASKING POLICY
+
+
+				CREATE OR REPLACE MASKING POLICY NAME
+				AS (VAL VARCHAR) RETURNS VARCHAR ->
+				 CASE
+				   WHEN CURRENT_ROLE ()IN ('RAJESH_FULL','ACCOUNTADMIN') THEN VAL
+				   ELSE CONCAT(LEFT(VAL,2),'###-###-####')
+				   END;
+
+				ALTER TABLE IF EXISTS RAJESH MODIFY COLUMN NAME
+				SET MASKING POLICY NAME
+
+
+				ALTER TABLE IF EXISTS RAJESH MODIFY COLUMN EMAIL
+				UNSET MASKING POLICY
 
