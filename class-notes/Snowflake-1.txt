@@ -411,6 +411,39 @@
 	 --> list to see how many files are there 
 	 --> Create a table 
 	 --> Perform copy to load the data (file foramt , copy options )
+	 EX:CREATE OR REPLACE STORAGE INTEGRATION RAJESH_INT
+			TYPE = EXTERNAL_STAGE 
+			STORAGE_PROVIDER = S3
+			ENABLED = TRUE
+			STORAGE_AWS_ROLE_ARN = 'arn:aws:iam::891377211308:role/vivision-s3-nov-access'
+			STORAGE_ALLOWED_LOCATIONS = ('s3://cloud-snowflake/employee_data_1.csv')
+
+
+			DESC STORAGE INTEGRATION RAJESH_INT;
+
+			CREATE OR REPLACE STAGE EXTERNAL_STAGE
+			URL = 's3://cloud-snowflake/employee_data_1.csv'
+			STORAGE_INTEGRATION = RAJESH_INT
+			FILE_FORMAT = (TYPE = CSV, FIELD_DELIMITER = ',' SKIP_HEADER = 1)
+
+			LIST @EXTERNAL_STAGE
+
+			CREATE OR REPLACE TABLE RAJESH1(
+			ID NUMBER,
+			FIRST_NAME VARCHAR(30),
+			LAST_NAME VARCHAR(30),
+			EMAIL STRING,
+			LOCATION VARCHAR(30),
+			DEPARTMENT VARCHAR(50)
+			)
+
+			COPY INTO RAJESH1
+			FROM @EXTERNAL_STAGE
+			FILE_FORMAT = (TYPE = CSV, FIELD_DELIMITER = ',' SKIP_HEADER = 1)
+            PATTERN  = ('*.FILENAME*.') it means in stages so many files write pattern only particular file upload
+
+			SELECT * FROM RAJESH1
+
 34,HOW TO INTEGRATED AZURE TO SNOWFLAKE?
 	 -->go to azure account and select storage account
 	 -->newly create storage account 
@@ -418,7 +451,7 @@
 	 -->create container and upload files
 	 -->go to snowflake account create storage integration
 	 -->CREATE OR REPLACE STORAGE INTEGRATION SATISH_INT
-				TYPE = EXTERNAL_STAGE1
+			TYPE = EXTERNAL_STAGE1
 			STORAGE_PROVIDER = AZURE
 			ENABLED = TRUE
 			AZURE_TENANT_ID ='a256b292-f2df-4178-81cf-37b48d006e4e'(microsoft entra id)
@@ -455,6 +488,44 @@
 	      EX:copy into table name
 		     from @stage name
 	  -->select * from table name
+33,HOW TO DATA UNLOADING IN SNOWFLAKE TO AWS?
+     --> Create table in snowfalke
+     --> Create AWS s3 bucket  
+	 --> Create IAM Roles to access the files in AWS 
+	 --> Create S3 integration 
+	 --> Describe S3 integration and take the user ARN and External ID 
+	 --> Modify the trust policy to add the ARN and eternal ID 
+	 --> Create a stage (AWS Url) 
+	 --> list to see how many files are there 
+	 --> copy the data tables to  stages 
+	     (COPY INTO @EXTERNAL_STAGE2/EMPLOYEES_DATA.CSV
+			FROM HR.PUBLIC.EMPLOYEES
+			FILE_FORMAT = (TYPE = 'CSV' FIELD_OPTIONALLY_ENCLOSED_BY = '"')
+			OVERWRITE = TRUE;)
+     EX:CREATE OR REPLACE STORAGE INTEGRATION DATA_UNLOAD
+			TYPE = EXTERNAL_STAGE
+			STORAGE_PROVIDER = S3
+			ENABLED = TRUE
+			STORAGE_AWS_ROLE_ARN = 'arn:aws:iam::891377211308:role/snowflake-cloud-role'
+			STORAGE_ALLOWED_LOCATIONS =('s3://snowflake-cloud/rajesh/')
+
+			DESC STORAGE INTEGRATION DATA_UNLOAD
+
+			CREATE OR REPLACE STAGE EXTERNAL_STAGE2
+			URL = 's3://snowflake-cloud/rajesh/'
+			STORAGE_INTEGRATION = DATA_UNLOAD
+			FILE_FORMAT = (TYPE =CSV,FIELD_DELIMITER =',',SKIP_HEADER=1)
+
+
+			LIST @EXTERNAL_STAGE2
+
+			COPY INTO @EXTERNAL_STAGE2/EMPLOYEES_DATA.CSV
+			FROM HR.PUBLIC.EMPLOYEES
+			FILE_FORMAT = (TYPE = 'CSV' FIELD_OPTIONALLY_ENCLOSED_BY = '"')
+			OVERWRITE = TRUE;
+
+
+
 
 
 34,what is mean by snowfpipe --> snowpipe means continue dataflow and continue data intigration,AWS,AZURE,GCP cloud bsed flatform TO snowflake
@@ -715,3 +786,53 @@
 				ALTER TABLE IF EXISTS RAJESH MODIFY COLUMN EMAIL
 				UNSET MASKING POLICY
 
+45,WHAT IS MEAN BY VIEWS?HOW MANY TYPES OF VIEWS?
+		-->A view is a database object that contain sql query built over one or multiple table
+		
+	-->there are 3 types of views 
+       1,NORMAL VIEWS
+	     -->can create single table or multiple tables
+		 -->it can support filters,joins,subqueries
+		 -->then query contain multiple tables 
+		 -->the query is simple
+		 -->the results of the change often
+		 ex: create or replace view view name
+		     as
+			 select * from employees
+	   2,SECURE VIEWS 
+	     -->A secure view does not allow users see the definaton of the views
+		 -->user can't see the underlying sql query
+		 -->the defination of a secure view is only exposed to authorized views
+		 -->2 advantages of secure views
+		     -->can protect the data by not exposing to other useres
+			 -->i dont want the users to see underlying table present in the database 
+			    ex;create or replace secure view view name
+				    as 
+					select * from table name
+	   3,MATERIALIZED VIEWS
+	     -->when materialized views on work with complex query,aney aggrigations 
+	     -->a materialized views store pre-compute result set
+		 -->can create single table only,can't build on multiple table
+		 -->querying a materialized views gives better performance than querying base table
+		 -->improve the performance 
+		 -->no need of additional maintainence auto refresh of result
+		 -->does not support joins,including self joins
+		 -->does not support aggrigate functions and windows functions
+		   EX:create or replace materialized view view name
+		        as
+			  select * from table name
+			  
+46,WHAT IS MEAN BY UDF AND STORE PROCEDURE?
+		-->user define functions are 2 types
+		   1,scalar functions :return the single values
+		   2,tabular functions :return set of rows a tabular values
+
+
+		 
+
+s3://cloud-snowflake/employee_data_1.csv
+
+ROLE ARN;arn:aws:iam::869935084112:user/xict0000-s
+EXTERNAL_ID;URB44929_SFCRole=2_ARsCf0cZqLm4oCQmpIhyna5jxms=
+
+s3://cloud-snowflake/RAJESH/
