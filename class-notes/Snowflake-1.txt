@@ -8,7 +8,7 @@
 			  
 *AWS CREDENTIALS:
 			  ->User name:rjms9866@gmail
-			  ->password :Rajesh@9866167759
+			  ->password :Rajesh@9866
 			  
 *How to connect snowfalke cli:-->open command prompt or gitbash
 							  -->snowsql -a account name -u username enterprice
@@ -289,17 +289,17 @@
 			from @stage name
 			file_format =(type = csv field_delimiter=','skip_header=1)
 			force = TRUE
-	  5,TRUNCATECOLUMNS :tuncated columns and enforce_length both are same,The table definaion is wrong, used to truncate 	 colums = true 
+	  5,TRUNCATECOLUMNS :tuncated columns and enforce_length both are same,The table definaion lenth is very large , used to truncate colums = true 
 	    ex:copy into table name
 			from @stage name
 			file_format =(type = csv field_delimiter=','skip_header=1)
 			TRUNCATECOLUMNS = TRUE
-	  6,ENFORCE_LENGTH: tuncatedcolumns and enforce_length both are same,The table definaion is wrong, used to truncatecolums = true
+	  6,ENFORCE_LENGTH: tuncatedcolumns and enforce_length both are same,The table defination lenth very large, used to truncatecolums = true
 
         ex:copy into table name
 			from @stage name
 			file_format =(type = csv field_delimiter=','skip_header=1)
-			ENFORCE_LENGTH = False
+			ENFORCE_LENGTH = TRUE
 	  7,PURG:it is used to  load the data (stage to table) after automatically remove the files in stage
 	  ex:copy into table name
 			from @stage name
@@ -307,22 +307,36 @@
 			FURG = TRUE
 			
 31,HOW TO WORK SEMI-STRECTURE DATA AND HOW TO CONVERT TO TABLE FORMAT?
+    --We can store this semi-structure data into a table by using a data type called
+	 ‘Variant’. Then we can read this data from Variant, we can process it into rows and
+      columns and load it into another table.
         HOW TO WORK ON JSON FORMAT TO TABLE FORMAT
-		
+	-->create external_stage
+    -->list the stage
+	-->create  a raw table 
+	-->create file format
+	-->copy the data stages to raw table 
+	-->select * from table name 
+	-->extract the data json to table format 
     --CREATE EXTERNAL_STAGE--
     1,CREATE OR REPLACE STAGE RAJEHS
       S3 URL
 
     2,LIST @STAGE NAME
 
-    3,CREATE TABLE JSON (RAW_FILE VARIANT)
+    3,CREATE TABLE TABLE NAME  (RAW_FILE VARIANT)
+--CREATE FILE FORMAT ---------
+     CREATE OR REPLACE SCHEMA FILE_FORMAT 
+	 CREATE OR REPLACE FILE_FORMAT FILE_FORMAT NAME
+	   TYPE = JSON;
+	 
 --COPY DATA STAGE TO TABLE--
 
     4,COPY INTO JSON
     FROM @STAGENAME 
     FILE_FORMAT = (TYPE = JSON)
 
---RETRIEVE THE DATA JSON TO TABLE FORMAT--
+-- EXTRACT THE DATA JSON TO TABLE FORMAT--
     5,SELECT $1:FIRST_NAME,
              $1:LAST_NAME,
              $1:JOB_TITLE,
@@ -340,8 +354,23 @@
              $1:ID
              FROM JSON
        )
-    
+-- ANOTHER METHOD TO EXTRACT THE DATA JSON TO TABLE 
+       create table hr_data as 
+       (
+       
+     SELECT RAW_FILE:city :: string as city  ,
+       RAW_FILE:first_name :: string as first_name,
+       RAW_FILE:gender :: string as gender,
+       RAW_FILE:job.salary :: int as salary ,
+       RAW_FILE:job. title :: string as title  ,
+       RAW_FILE:spoken_languages[0].language :: string as language,
+       RAW_FILE:spoken_languages[0].level :: string as level 
+
+       from OUR_FIRST_DB.PUBLIC.JSON_RAW
+       )
+
     SELECT * FROM CSV_TABLE
+	
 32,HOW TO WORK ON ERROR RECORDS
 
     
@@ -822,17 +851,64 @@
 		        as
 			  select * from table name
 			  
-46,WHAT IS MEAN BY UDF AND STORE PROCEDURE?
+46,WHAT IS MEAN BY UDF (USER DEFINE FUNCTIONS)?
 		-->user define functions are 2 types
 		   1,scalar functions :return the single values
 		   2,tabular functions :return set of rows a tabular values
 
-
-		 
-
-s3://cloud-snowflake/employee_data_1.csv
-
-ROLE ARN;arn:aws:iam::869935084112:user/xict0000-s
-EXTERNAL_ID;URB44929_SFCRole=2_ARsCf0cZqLm4oCQmpIhyna5jxms=
-
-s3://cloud-snowflake/RAJESH/
+47,WHAT IS MEAN BY STORED PROCEDURE?
+        -->Stored procedure allow you to write a procedure code that include sql statement,
+			conditional statement,looping statement and cursor 
+		-->snowflake support 5 types of languages for writing procedure
+		    1,SQL
+			2,JAVA
+			3,JAVASCRIPT
+			4,PYTHON
+			5,SCALA
+		-->from stored procedure,you can return single values or tabular data
+		-->supports branching and looping
+		-->Dynamically creating a sql statement and execute it
+48,HOW TO INTEGRATED THE SNOWFLAKE  TO POWER_BI?
+        -->First login to snowfalke account
+		-->take account name;urb44929.us-east-1.snowflakecomputing.com
+		-->warehouse name:compute_wh
+		-->username : NAIDU
+		-->password : Rajesh@9866167759
+		-->this four credentials mandatory
+		
+	 -->first check your local system power_bi deskop is available or not
+	 -->it is not available goto crome type search bar (microsoft powerbi download)
+	 -->open powerbi your local system show some icons
+	 -->select blank report and select get data select snowflake click connect
+	 -->type snowfalke account name:urb44929.us-east-1.snowflakecomputing.com
+     -->type warehouse name :compute_wh click ok button
+	 -->type username:NAIDU 
+	 -->type password:Rajesh@9866167759 enter
+	 
+49,HOW THE COST IS CALCULATED IN SNOWFLAKE?
+		-->there are two types of pricing calculated in snowfalke
+    1,compute cost:
+		-->charged for active warehouse per hour
+		-->depending on the size of the warehouse
+		-->billed by second (minimum 1 min)
+		-->charged in snowflake credits 
+		-->warehouse can automatically suspend and automatically resume
+		-->each size consume a specific number of credits per hour
+		-->x-small 1credit/hour
+		-->small 2credit/hour
+		-->medium 4credit/hour
+		-->large 8credit/hour
+		-->x-large 16credit/hour
+		-->2x-large 32credit/hour
+		-->3x-large 64credit/hour
+		-->4x-large 128credit/hour
+		-->5x-large 256credit/hour
+		-->6x-large 512credit/hour
+	2,storage cost:                                      
+	   -->monthly storage fees 
+	   -->based on average storage used per month
+	   -->cost calculated after compression
+	   -->cloud provider
+	   
+	   
+                                           
