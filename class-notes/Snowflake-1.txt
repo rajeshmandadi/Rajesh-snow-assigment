@@ -313,13 +313,14 @@
         HOW TO WORK ON JSON FORMAT TO TABLE FORMAT
 	-->create external_stage
     -->list the stage
-	-->create  a raw table 
+	-->create  a table  raw table 
 	-->create file format
 	-->copy the data stages to raw table 
 	-->select * from table name 
-	-->extract the data json to table format 
+	-->extract the data json to table format
+	-->load in to another table
     --CREATE EXTERNAL_STAGE--
-    1,CREATE OR REPLACE STAGE RAJEHS
+    1,CREATE OR REPLACE STAGE RAJESH
       S3 URL
 
     2,LIST @STAGE NAME
@@ -558,7 +559,7 @@
 
 
 34,what is mean by snowfpipe --> snowpipe means continue dataflow and continue data intigration,AWS,AZURE,GCP cloud bsed flatform TO snowflake
-
+    -->snowpipe is serverless compute model
  
 1. Create AWS s3 bucket and load the files 
 2. Create IAM Roles to access the files in AWS 
@@ -570,6 +571,64 @@
 8. Create a table 
 9. Perform copy to load the data (file foramt , copy options )  to test 
 10. Create a pipe and describe the pipe and configure pipe ARN into s3 properties as SQS
+     -->CREATE OR REPLACE PIPE PIPE_NAME
+		AUTO_INGEST = TRUE
+		AS
+		COPY INTO DBNAME.SCHEMANAME.TABLENAME FROM @EXTERNAL_STAGE_NAME;
+		
+		
+	EX:CREATE OR REPLACE STORAGE INTEGRATION S3_INT
+	        TYPE = EXTERNAL_STAGE
+			ENABLED = TRUE
+			STORAGE_PROVIDER = S3
+			STORAGE_AWS_ROLE_ARN = 'arn:aws:iam::891377211308:role/vivision-s3-nov-access'
+			STORAGE_ALLOWED_LOCATIONS = ('s3://rajesh-snowpipe/csv/')
+			
+		    DESC STORAGE INTEGRATION S3_INT
+			
+			CREATE OR REPLACE FILE_FORMAT RAJESH_FORMAT
+			TYPE = CSV
+			FIELD_DELIMITER =','
+			SKIP_HEADER = 1
+			
+			
+			CREATE OR REPLACE STAGE RAJESH_STAGE
+			URL = 's3://rajesh-snowpipe/csv/'
+			STORAGE_INTEGRATION = S3_INT
+			FILE_FORMAT = RAJESH_FILE
+			
+			LIST @RAJESH_STAGE
+			
+			CREATE OR REPLACE TABLE TEST1 (
+			  ID INT,
+			  FIRST_NAME STRING,
+			  LAST_NAME STRING,
+			  EMAIL STRING,
+			  LOCATION STRING,
+			  DEPARTMENT STRING
+			  )
+
+			CREATE OR REPLACE PIPE RAJESH_PIPE
+			AUTO_INGEST = TRUE
+			AS
+			COPY INTO TEST1
+			FROM @EXTERNAL_STAGE
+			
+			DESC PIPE RAJESH_PIPE --TAKE ARN
+			-->goto s3 select bucket select properties 
+			-->create event notification
+			-->event name =rajesh
+			-->prefix = snowpipe
+			-->select all object create events
+			-->select SQS queue
+			-->select Enter SQS queue ARN
+			-->finally past pipe url
+			
+			ALTER PIPE RAJESH_PIPE REFRESH
+			
+			SELECT * FROM TEST1
+			
+		
 11. Resume/pause refresh a pipe  
 
 35,WHAT IS MEAN BY TIME_TRAVEL -->we can retrive the data particular period of time,point in time recovery,in order to get histarical data (ex:by default data delete or modify we can use to retrive the data)
@@ -601,7 +660,7 @@
 			 select * from table-name before (timestamp => date,time ::timestamp))
 
 
-37,TYPES OF TABLES ;There are 3 types of tables in snowflake
+37,TYPES OF TABLES IN SNOWFLAKE	 ;There are 3 types of tables in snowflake
                      
 		-->permanent table
 		    -->Default table in snowflake
@@ -672,7 +731,7 @@
 		 
 		2,APPEND-ONLY  STREAMS::
 		    -->Tracks only inserted rows.
-			-->Changes from updates or deletes will not appear in this stream
+			-->Changes from updates or delete will not appear in this stream
 		  (ex:CREATE OR REPLACE STREAM STREAM NAME ON TABLE TABLE NAME 
 		          APPEND_ONLY = TRUE
 		3,INSERT-ONLY STREAMS::supported only external tables only,insert row only,they do not record delete operations
@@ -909,4 +968,7 @@
 	   -->based on average storage used per month
 	   -->cost calculated after compression
 	   -->cloud provider
-	   hai rajesh
+
+	arn:aws:iam::869935084112:user/xict0000-s
+	
+	URB44929_SFCRole=2_W4lr5ChC8M/1ExlBUpmlV9DmuW0=
