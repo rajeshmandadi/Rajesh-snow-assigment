@@ -1,7 +1,7 @@
 *SNOWFLAKE CREDENTIALS:
-              ->account name:urb44929.us-east-1  
+              ->account name:urb44929.us-east-1
 			  ->username :Naidu
-			  ->password: Naidu@1234
+			  ->password: Rajesh@9866167759
 *AZURE CREDENTIALS:
               ->User name:rjms9866@gmail.com
 			  ->password :Rajesh9866167759
@@ -69,11 +69,51 @@
 
 12,Window functions:
     -->row_numbers:it display only unique values
+	
+	   EX:SELECT FIRST_NAME,
+		      LAST_NAME,
+              ROW_NUMBER()OVER (ORDER BY SALARY) AS ROWNUMBER
+              FROM EMPLOYEES
+ 				Karen	Colmenares	1
+				Guy		Himuro		2
+				Irene	Mikkilineni	3
+				Sigal	Tobias		4
+				Shelli	Baida		5
 	-->rank :two rows have same vales, rank also same,but next rank also skip accordingly
+		EX:  SELECT EMPLOYEE_ID,
+			   FIRST_NAME,
+			   LAST_NAME,
+			   RANK() OVER (ORDER BY SALARY) AS DRANK
+			   FROM EMPLOYEES  
 	-->dense_rank :two rows are same values,rank also same, but next rank is not skipped
+		EX: SELECT EMPLOYEE_ID,
+			   FIRST_NAME,
+			   LAST_NAME,
+			   DENSE_RANK() OVER (ORDER BY SALARY) AS DRANK
+			   FROM EMPLOYEES
+
+			200	Jennifer Whalen	    10
+			106	Valli	 Pataballa	11
+			105	David	 Austin		11
+			104	Bruce	 Ernst		12
+			202	Pat		 Fay		12
+			179	Charles	Johnson		13
 	-->lag :it is used to display crrent row to previous row
+		EX:	 SELECT EMPLOYEE_ID,
+			   FIRST_NAME,
+			   LAST_NAME,
+			   lag(salary) OVER (ORDER BY SALARY) AS DRANK
+			   FROM EMPLOYEES
+			119	Karen	Colmenares	NULL
+			118	Guy		Himuro		2500.00
+			126	Irene	Mikkilineni	2600.00
+			117	Sigal	Tobias		2700.00
 	-->lead :it is used to display the current row to next rows
-					
+		EX: 119	Karen	Colmenares	2600.00
+			118	Guy	    Himuro	    2700.00
+			126	Irene	Mikkilineni	2800.00
+			117	Sigal	Tobias	    2900.00
+			100	Steven	King	    NULL
 13,	Whatat is mean by sub_langguage ->it is used to query inside query is also sub-language
 14,CASE	-->if,else
 15,CTE  -->comman table expression
@@ -126,14 +166,47 @@
 					EX:select * from employees
 					   where employee_id = 100
 17,AGGRIGATE FUNCTIONS :
-		-->AVG:
-		-->SUM:
-		-->MIN:
-		-->MAX:
-		-->CONCAT:
-		-->UPPER:
-		-->LOWER:
+		-->AVG:Calculates the average (mean) of numeric values in a column.
+				EX:SELECT AVG(SALARY) FROM EMPLOYEES
+				
+		-->SUM:Calculates the total (sum) of numeric values in a column.
+				EX:SELECT SUM(SALARY) FROM EMPLOYEES
+				
+		-->MIN:Finds the smallest (minimum) value in a column or expression.
+				EX:SELECT MIN (SALARY) FROM EMPLOYEES
+				
+		-->MAX:Finds the largest (maximum) value in a column or expression.
+				EX:SELECT MAX (SALARY) FROM EMPLOYEES
+				
+		-->CONCAT:it is used to merge the two fealds
+				ex:SELECT CONCAT(COUNTRY_ID, ',', COUNTRY_NAME) AS FULL_NAME FROM COUNTRIES
+				OUTPUT:Steven King
+					   Neena Kochhar
+					   Lex De Haan
+					   Alexander Hunold
+		-->UPPER: Converts all characters in a string to uppercase.
+				ex:SELECT UPPER(COUNTRY_NAME) AS FULL_NAME FROM COUNTRIES
+				OUTPUT: AR
+                        AU
+                        BE
+                        BR
+                        CA
+                        CH
+                        CN
+		-->LOWER:Converts all characters in a string to lowercase.
+		        ex:SELECT LOWER(COUNTRY_NAME) AS FULL_NAME FROM COUNTRIES
+				OUTPUT: ar
+                        au
+                        be
+                        br
+                        ca
+                        ch
+		-->LISTAGG:It is used to concatenate values from multiple rows into a single    string, separated by a specified delimiter
 		
+		        EX:SELECT LISTAGG(FIRST_NAME, ',') FROM EMPLOYEES
+		        OUTPUT:Steven,Neena,Lex,Alexander,Bruce,David,Valli,Diana,Nancy,Daniel,John,Ismael,Jose Manuel,Luis,Den,Alexander,Shelli,Sigal,Guy,Karen,Matthew,Adam,Payam,Shanta,Irene,John,Karen,Jonathon,Jack,Kimberely,Charles,Sarah,Britney,Jennifer,Michael,Pat,Susan,Hermann,Shelley,William
+				
+				
 18,SQL JIONS : It is used to display the data from two are more tables
 		-->INNER JOIN; It print the matching values from both table 
 						EX.SELECT E.FIRST_NAME,
@@ -230,14 +303,14 @@
 	1,SYSTEM DEFINE ROLES:system define roles they are 6 types
 		-->ACCOUNTADMIN
              -->it is the top level role in the system
-			 -->accountadmin can manage account level setting,users,roles,billing,and all  database object
-			 -->can enable multi factor authenticaton only accountadmin
+			 -->account admin can manage account level setting,users,roles,billing,and all  database object
+			 -->can enable multifactor authenticaton only accountadmin
 			 
 		-->SECURITYADMIN
-		     -->Securityadmin manage security-related tasks such as creating and managing users, roles, and granting/revoking privileges.
+		     -->Security admin manage security-related tasks such as creating and managing users, roles, and granting/revoking previleges.
 			 -->Cannot manage account-level settings
 		-->SYSADMIN
-		     -->Responsible for managing database objects and operations,such as creating databases, schemas, tables, and managing data.
+		     -->sysadmin manage database objects and operations,such as creating databases, schemas, tables, and managing data.
 			 -->Does not have user or role management capabilities.
 		-->USERADMIN
 			 -->this roles is granted the create users and create roles security previllege 
@@ -247,15 +320,18 @@
 			 -->Provides minimal, default-level access
 		-->ORGADMIN
 		     -->role that manages operations that organization level,more specifically role
-			 -->can create account in the organization 
-			 -->can view usage information across the organization 
+			 -->can create account in the organization
+			 -->can view usage information across the organization
 	2,CUSTOMROLE:
-			 -->customrole can be created by useradmin role
+			 -->custom role can be created by useradmin role
 			 -->by default a newly-created role is not assigned to any user,not granted
 27,stages in snowflake:They are two types of stages in snowflake 
 	-->INTERNAL STAGE: we can load the data local system to snowflake, using to internal stages
+	1,USER STAGE:
+	2,TABLE STAGE:
+	3,NAMED STAGE:
 	-->EXTERNAL STAGE: we can load the data cloud to snowflake, used to  external stage
-28,PUT COMMAND:Put command is used to load the data into (internal-stage),put command only work CLI,it not work to GUI,
+28,PUT COMMAND:Put command is used to load the data localy to (internal-stage),put command only work CLI,it not work to GUI,
 
 
 29,COPY COMMAND: It is used to load the data stages to tables(INTERNAL/EXTERNAL)
@@ -812,12 +888,12 @@
 42,WHAT IS MEAN BY ACCESS CONTROL IN SNOWFLAKE?
 		
 		-->access control determine who can access the database object and perform operations on specific object in snowfalke
-43,TYPES OF ROLES IN SNOWFLAKE :-->there are 2 types of roles 
-		-->system defined role
-		-->custom role
+
 		
 44,WHAT IS MEAN BY DATAMASKING IN SNOWFLAKE?
-        -->Data masking in Snowflake is a security feature that protects sensitive data by obscuring or transforming it for users who lack the necessary permissions. It allows organizations to control access to sensitive information while enabling authorized users to view the data in its original form.
+		-->snowfalke supports using Dynamic Data Masking on columns of tables and views. We can partially mask the data or fully mask the data from un-authorized users.
+		
+        -->Data masking in Snowflake is a security feature that protects sensitive data by securing or transforming it for users who lack the necessary permissions. It allows organizations to control access to sensitive information while enabling authorized users to view the data in its original form.
 		
 		EX:CREATE OR REPLACE TABLE RAJESH(
 				ID INT,
@@ -879,16 +955,16 @@
 		
 	-->there are 3 types of views 
        1,NORMAL VIEWS
+	     -->normal views allo aney one can see the definaion of the views 
 	     -->can create single table or multiple tables
 		 -->it can support filters,joins,subqueries
-		 -->then query contain multiple tables 
 		 -->the query is simple
 		 -->the results of the change often
 		 ex: create or replace view view name
 		     as
 			 select * from employees
 	   2,SECURE VIEWS 
-	     -->A secure view does not allow users see the definaton of the views
+	     -->A secure view does not allow un-authorized users see the defination of the views
 		 -->user can't see the underlying sql query
 		 -->the defination of a secure view is only exposed to authorized views
 		 -->2 advantages of secure views
@@ -969,6 +1045,13 @@
 	   -->cost calculated after compression
 	   -->cloud provider
 
-	arn:aws:iam::869935084112:user/xict0000-s
-	
-	URB44929_SFCRole=2_W4lr5ChC8M/1ExlBUpmlV9DmuW0=
+50,WHAT IS THE DIFFERENCE BETWEEN SCALEUP AND SCALEOUT ?
+ANS, SCALEUP: -->it means increase the the wherehouse size
+			  -->present wherehouse size is 'small' increase the size to 'large'
+			 
+              EX:ALTER WAREHOUSE WAREHOUSE NAME SET WAREHOUSE_SIZE = 'LARGE'
+			  
+	 SCALEOUT:-->increase the number of clusters to avoid a queries going into queues 
+	          
+			  EX:ALTER WAREHOUSE WAREHOUSE HOUSE NAME SET MAX_CLUSTER_COUNT=8, MIN_CLUSTER_COUNT =2,
+			  
