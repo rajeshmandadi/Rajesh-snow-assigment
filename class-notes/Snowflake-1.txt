@@ -1,7 +1,7 @@
 *SNOWFLAKE CREDENTIALS:
-              ->account name:urb44929.us-east-1
-			  ->username :Naidu
-			  ->password: Rajesh@9866167759
+              ->account name:rpb27350.us-east-1
+			  ->username :Rajesh
+			  ->password: Rajesh@9866
 *AZURE CREDENTIALS:
               ->User name:rjms9866@gmail.com
 			  ->password :Rajesh9866167759
@@ -53,8 +53,11 @@
 
  		
 5,what is mean by database -->It is a collection of data     	{strecture(table,format),semi-strecture(json,xmlf),un-strecture}
-6,what is mean by warehouse --> we are using to store the data but the purpose is different, 
-                            --> historical data and analytical solution (large voulume of data)     							
+6,what is mean by data warehouse --> we are using to store the data but the purpose is different, 
+                            --> historical data and analytical solution (large voulume of data)  
+6,what is mean by virtual warehouse -->it means inside the server 
+
+  							
 7,data types --> INT/NUMBER,CHAR/VARCHAR/STRING(num,char), DATE/DECIMAL
 8,What is mean by count(*)-->it display the all rows in table
 9,what is mean by count(colum-name) -->it is used to excepted null values in a table
@@ -74,7 +77,7 @@
 		      LAST_NAME,
               ROW_NUMBER()OVER (ORDER BY SALARY) AS ROWNUMBER
               FROM EMPLOYEES
- 				Karen	Colmenares	1
+ 		output: Karen	Colmenares	1
 				Guy		Himuro		2
 				Irene	Mikkilineni	3
 				Sigal	Tobias		4
@@ -114,18 +117,42 @@
 			126	Irene	Mikkilineni	2800.00
 			117	Sigal	Tobias	    2900.00
 			100	Steven	King	    NULL
-13,	Whatat is mean by sub_langguage ->it is used to query inside query is also sub-language
-14,CASE	-->if,else
-15,CTE  -->comman table expression
+13,	Whatat is mean by sub_language ->it is used to query inside query is also sub-language
 
+		EX:SELECT * FROM EMPLOYEES WHERE EMPLOYEE_ID  IN (SELECT EMPLOYEE_ID FROM DEPENDENTS)
+		
+OUTPUT:100	Steven	King	steven.king@sqltutorial.org	515.123.4567	1987-06-17	4	24000.00      9
+       101	Neena	Kochhar	neena.kochhar@sqltutorial.org 515.123.4568  1989-09-21	5	17000.00 100  9
+	   102	Lex	De Haan	lex.de haan@sqltutorial.org	515.123.4569	1993-01-13	5	17000.00     100  9
+	   
+	   EX: SELECT * FROM EMPLOYEES WHERE EMPLOYEE_ID  NOT IN (SELECT EMPLOYEE_ID FROM DEPENDENTS)
+OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	19	8000.00	100	5	
+       121	Adam	Fripp	adam.fripp@sqltutorial.org	650.123.2234	1997-04-10	19	8200.00	100	5   
+	   122	Payam	Kaufling	payam.kaufling@sqltutorial.org	650.123.3234	1995-05-01	19	7900.00	100	5
+14,CASE	-->if,else
+15,CTE  --> (CTE) in Snowflake is a temporary result set that you define within a SQL query  
+
+			EX:WITH CTE_EMP AS(
+				SELECT FIRST_NAME,
+				LAST_NAME,
+				DENSE_RANK() OVER (ORDER BY SALARY) AS DRANK
+				FROM EMPLOYEES
+				) SELECT * FROM CTE_EMP WHERE DRANK =14
 16,set operators  -->the sql set operations are used to combine the two or more table  sql statement 	there are four types
 		-->UNION;it is used to display two OR more tables unique values only
+		             
 				  ex;-->table-1 rajesh,satish,mastan
 				     -->Table-2 rajesh,vamsi,sudhakar
+					 select * from table1
+					 union
+					 select * from table2
 					 output;rajesh,satish,mastan,vamsi,sudhakar
 		-->UNION ALL;it is used to display both table information do not remove dupliccate values
 				  ex;-->table-1 rajesh,satish,mastan
 				     -->Table-2 rajesh,vamsi,sudhakar
+					 select * from table1
+					 union all
+					 select * from table2
 					output;rajesh,rajesh,satish,mastan,vamsi,sudhakar
 					
 		-->minuse;minus remove the duplicate rows
@@ -135,6 +162,9 @@
 		-->intersect;it  display the both table common values
 				  ex;-->table-1 rajesh,satish,mastan
 				     -->Table-2 rajesh,vamsi,sudhakar
+					 select * from table1
+					 intersect
+					 select * from table2
 					output;rajesh,
 -->LOGICAL OPERATORS:
 		-->AND: The AND operator displays a record if all the conditions are TRUE.
@@ -184,7 +214,7 @@
 					   Neena Kochhar
 					   Lex De Haan
 					   Alexander Hunold
-		-->UPPER: Converts all characters in a string to uppercase.
+		-->UPPER: Converts all characters in a starting to uppercase.
 				ex:SELECT UPPER(COUNTRY_NAME) AS FULL_NAME FROM COUNTRIES
 				OUTPUT: AR
                         AU
@@ -207,7 +237,7 @@
 		        OUTPUT:Steven,Neena,Lex,Alexander,Bruce,David,Valli,Diana,Nancy,Daniel,John,Ismael,Jose Manuel,Luis,Den,Alexander,Shelli,Sigal,Guy,Karen,Matthew,Adam,Payam,Shanta,Irene,John,Karen,Jonathon,Jack,Kimberely,Charles,Sarah,Britney,Jennifer,Michael,Pat,Susan,Hermann,Shelley,William
 				
 				
-18,SQL JIONS : It is used to display the data from two are more tables
+18,SQL JIONS :In order to fetched the data two or more tables 
 		-->INNER JOIN; It print the matching values from both table 
 						EX.SELECT E.FIRST_NAME,
 						   E.LAST_NAME,
@@ -221,15 +251,13 @@
 					 EX:   SELECT E.FIRST_NAME,
 						   D.FIRST_NAME
 						   FROM EMPLOYEES E
-						   RIGHT OUTER JOIN DEPENDENTS AS D
-						   ON E.FIRST_NAME = D.FIRST_NAME
+						   RIGHT OUTER JOIN DEPENDENTS AS D ON E.FIRST_NAME = D.FIRST_NAME
        
 		-->LEFT JOINN :IT print the all values from leftside table, then matched values from right side table             
 					 EX.   SELECT E.FIRST_NAME,
 						   D.FIRST_NAME
 						   FROM EMPLOYEES E
-						   LEFT OUTER JOIN DEPENDENTS AS D 
-						   ON E.FIRST_NAME = D.LAST_NAME
+						   LEFT OUTER JOIN DEPENDENTS AS D ON E.FIRST_NAME = D.LAST_NAME
 						   
        
        
@@ -241,7 +269,10 @@
 					   ON E.FIRST_NAME = D.FIRST_NAME
 				  
 		-->SELF JOIN;  It’s used to compare rows within the same table,
-		
+					EX:SELECT E.FIRST_NAME AS NAME,
+					   M.FIRST_NAME AS MANAGER
+					   FROM EMPLOYEES  E
+					   INNER JOIN EMPLOYEES AS M ON E.MANAGER_ID = M.EMPLOYEE_ID
 		
 		-->CROSS JOIN; it print the values from both tales, especially with large tables.
 		(N number of rows and N number of colums)cros multification 3*3 =9
@@ -266,7 +297,7 @@
 
     a,storage layer   :-->data will be stored in columnar format
 					   -->data will be stored in micro partitions
-					   -->the data objects stored by snowflake canot directly visible are directly access by the customar 
+					   -->the data objects stored by snowflake can't directly visible are directly access by the customar 
 					   -->we can also define cluster key on large data for better performance 
 
     b,query processing:-->This is the actual processing unit of snowflake 
@@ -313,7 +344,7 @@
 		     -->sysadmin manage database objects and operations,such as creating databases, schemas, tables, and managing data.
 			 -->Does not have user or role management capabilities.
 		-->USERADMIN
-			 -->this roles is granted the create users and create roles security previllege 
+			 -->this roles is granted the create users and  roles security previllege 
 			 -->can create users and roles in the account
 		-->PUBLIC                     
 			 -->Default role assigned to all users		 
@@ -325,11 +356,14 @@
 	2,CUSTOMROLE:
 			 -->custom role can be created by useradmin role
 			 -->by default a newly-created role is not assigned to any user,not granted
-27,stages in snowflake:They are two types of stages in snowflake 
+27,STAGES IN SNOWFLAKE :-->a stage is a specific data files stored  the data can be loaded into tables
+						-->They are two types of stages in snowflake
 	-->INTERNAL STAGE: we can load the data local system to snowflake, using to internal stages
 	1,USER STAGE:
 	2,TABLE STAGE:
 	3,NAMED STAGE:
+27,HOW CAN I REMOVE THE FILES INTERNAL STAGE--> REMOVE @RAJESH_INTERNAL_STAGE
+ 
 	-->EXTERNAL STAGE: we can load the data cloud to snowflake, used to  external stage
 28,PUT COMMAND:Put command is used to load the data localy to (internal-stage),put command only work CLI,it not work to GUI,
 
@@ -355,7 +389,7 @@
 	    from @stage name
 	    file_format =(type =csv field_delimiter=','skip_header=1)
 	    on_errors = skip_file	
-      3,SIZE_LIMIT:	Limits the maximum size of the staged data being loaded.   
+      3,SIZE_LIMIT:	Limit is the maximum size  data loaded stage to table   
 	    ex:ex:ex: copy into table name
 	    from @stage name
 	    file_format =(type =csv field_delimiter=','skip_header=1)
@@ -370,12 +404,12 @@
 			from @stage name
 			file_format =(type = csv field_delimiter=','skip_header=1)
 			TRUNCATECOLUMNS = TRUE
-	  6,ENFORCE_LENGTH: tuncatedcolumns and enforce_length both are same,The table defination lenth very large, used to truncatecolums = true
+	  6,ENFORCE_LENGTH: tuncatedcolumns and enforce_length both are same,The table defination lenth is exceded, used to truncatecolumns = true
 
         ex:copy into table name
 			from @stage name
 			file_format =(type = csv field_delimiter=','skip_header=1)
-			ENFORCE_LENGTH = TRUE
+			ENFORCE_LENGTH = false
 	  7,PURG:it is used to  load the data (stage to table) after automatically remove the files in stage
 	  ex:copy into table name
 			from @stage name
@@ -471,7 +505,8 @@
 	FILE_FORMAT = (TYPE =CSV FIELD_DELIMITER SKIP_HEADER=1)
 	VALIDATION_MODE = RETURN_ERRORS
 	
-	--CREATE REJECTED RECORDS TABLE AND LOAD THE  REJECTED RECORDS
+	--CREATE REJECTED RECORDS TABLE AND LOAD THE  REJECTED RECORDS--
+	
 	CREATE OR REPLACE (REJECTED_RAJESH) AS
 	SELECT REJECTED_RECORDS FROM TABLE (RESULT_SCAN(LAST_QUERY_ID()));
 	
@@ -510,8 +545,10 @@
 
 	 --> Create AWS s3 bucket and load the files 
 	 --> Create IAM Roles to access the files in AWS 
+			-->take role arn 
 	 --> Create S3 integration 
-	 --> Describe S3 integration and take the user ARN and External ID 
+	 --> Describe S3 integration 
+	 --> take the user ARN and External ID
 	 --> Modify the trust policy to add the ARN and eternal ID 
 	 --> Create a stage (AWS Url) 
 	 --> list to see how many files are there 
@@ -675,14 +712,15 @@
 			
 			LIST @RAJESH_STAGE
 			
-			CREATE OR REPLACE TABLE TEST1 (
-			  ID INT,
-			  FIRST_NAME STRING,
-			  LAST_NAME STRING,
-			  EMAIL STRING,
-			  LOCATION STRING,
-			  DEPARTMENT STRING
-			  )
+			CREATE OR REPLACE TABLE RAJESH1(
+			ID NUMBER,
+			FIRST_NAME VARCHAR(30),
+			LAST_NAME VARCHAR(30),
+			EMAIL STRING,
+			LOCATION VARCHAR(30),
+			DEPARTMENT VARCHAR(50)
+			)
+
 
 			CREATE OR REPLACE PIPE RAJESH_PIPE
 			AUTO_INGEST = TRUE
@@ -723,18 +761,19 @@
 		 
 -->offset-->it is used to retrive the data just 1,2 minutes back data only
 		    
-		 ex:create or replace table-name
-		    (
-		    select * from(table-name) at (offset => -60*1.5)
+		 ex:CREATE OR REPLACE TABLE EMP_BACKUP1 AS 
+			(
+			SELECT * FROM EMPLOYEES AT(OFFSET =>-60*2.5));
+			
 -->queryid --> it is used to retrive the data with query id
-		 create or replace table table-name (
-		 ex:select * form (table-name) before (statement => ueryid))
-		 
--->timestamp-->it is used to retrive the data particular period of time (use time)
-		 ex: create or replace table-name
-		     (
-			 select * from table-name before (timestamp => date,time ::timestamp))
+		 EX:CREATE OR REPLACE TABLE EMP_BACKUP2 AS (
 
+			SELECT * FROM EMPLOYEES BEFORE(statement => '01b99c75-010b-e66d-000a-b47700029ada'));
+
+-->timestamp-->it is used to retrive the data particular period of time (use time)
+		 ex:CREATE OR REPLACE TABLE EMP_BACKUP3 AS (
+		 
+			SELECT * FROM EMPLOYEES BEFORE(TIMESTAMP => '2025-01-10 05:18:57.579'::TIMESTAMP));
 
 37,TYPES OF TABLES IN SNOWFLAKE	 ;There are 3 types of tables in snowflake
                      
@@ -772,8 +811,9 @@
 			-->we can take multiple copies of data,with no aditional cost that means "zero copy clone"
 			-->the cloned objects is independent from original
 			-->works with time travel also available
-			(create or replace table source tablename
-			       clone destination table name)
+			EX: CREATE OR REPLACE TABLE NEW TABLE NAME
+				CLONE
+				OLD TABLE NAME
 			
 39,WHAT IS MEAN BY WORKING WITH TASK:
             -->we can schedule the task particular period of time execute the task
@@ -951,18 +991,18 @@
 				UNSET MASKING POLICY
 
 45,WHAT IS MEAN BY VIEWS?HOW MANY TYPES OF VIEWS?
-		-->A view is a database object that contain sql query built over one or multiple table
+		-->A view is a database object that contain sql query built over one or multiple tables
 		
 	-->there are 3 types of views 
        1,NORMAL VIEWS
-	     -->normal views allo aney one can see the definaion of the views 
+	     -->normal views allows aney one can see the definaion of the views 
 	     -->can create single table or multiple tables
 		 -->it can support filters,joins,subqueries
 		 -->the query is simple
 		 -->the results of the change often
 		 ex: create or replace view view name
 		     as
-			 select * from employees
+			 select * from employees         
 	   2,SECURE VIEWS 
 	     -->A secure view does not allow un-authorized users see the defination of the views
 		 -->user can't see the underlying sql query
@@ -974,9 +1014,9 @@
 				    as 
 					select * from table name
 	   3,MATERIALIZED VIEWS
-	     -->when materialized views on work with complex query,aney aggrigations 
+	     -->when materialized views on work with complex query,aney aggrigations
 	     -->a materialized views store pre-compute result set
-		 -->can create single table only,can't build on multiple table
+		 -->can create single table only,can't built on multiple table
 		 -->querying a materialized views gives better performance than querying base table
 		 -->improve the performance 
 		 -->no need of additional maintainence auto refresh of result
