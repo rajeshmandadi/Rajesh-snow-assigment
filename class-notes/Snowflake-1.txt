@@ -56,6 +56,10 @@
 6,what is mean by data warehouse --> we are using to store the data but the purpose is different, 
                             --> historical data and analytical solution (large voulume of data)  
 6,what is mean by virtual warehouse -->it means inside the server 
+	    create warehouse: 	CREATE WAREHOUSE my_warehouse
+							WITH WAREHOUSE_SIZE = XSMALL
+							AUTO_SUSPEND = 600
+							AUTO_RESUME = TRUE;
 
   							
 7,data types --> INT/NUMBER,CHAR/VARCHAR/STRING(num,char), DATE/DECIMAL
@@ -138,7 +142,7 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
 				DENSE_RANK() OVER (ORDER BY SALARY) AS DRANK
 				FROM EMPLOYEES
 				) SELECT * FROM CTE_EMP WHERE DRANK =14
-16,set operators  -->the sql set operations are used to combine the two or more table  sql statement 	there are four types
+16,set operators  -->the sql set operations are used to combine the two or more table  sql statement there are four types
 		-->UNION;it is used to display two OR more tables unique values only
 		             
 				  ex;-->table-1 rajesh,satish,mastan
@@ -305,7 +309,7 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
 					   -->vm also scale up and scale down automatically
 					   -->auto suspend and auto resume is available
 	c,cloud service:   -->collection of service that cordinate activities across snowflake
-					   -->This the brain of the snowflake
+					   -->This is  the brain of the snowflake
 					   -->Authentication and access control layer
 					   -->infracture management 
 					   -->metadata management
@@ -483,7 +487,15 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
     SELECT * FROM CSV_TABLE
 	
 32,HOW TO WORK ON ERROR RECORDS
-
+	-->FIRST CREATE STAGE
+	-->LIST THE STAGE
+	-->CREATE TABLE 
+	-->COPY THE DATA INTO TABLE 
+	-->SHOW ANEY ERROR RECORDS
+	-->CREATE TABLE TABLE NAME 
+	   SELECT REJECTED_RECORDS FROM TABLE (RESULT_SCAN(LAST_QUERY_ID()))
+	-->SPLIT THE ERROR RECORDS LOADED INTO ANOTHER TABLE 
+	-->UPDATE THE ERROR  RECORDS AND INSERT THE DATA
     
 	CREATE OR REPLACE EXTERNAL_STAGE
 	S3 URL
@@ -507,16 +519,10 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
 	
 	--CREATE REJECTED RECORDS TABLE AND LOAD THE  REJECTED RECORDS--
 	
-	CREATE OR REPLACE (REJECTED_RAJESH) AS
+	CREATE OR REPLACE TABLE (REJECTED_RAJESH) AS
 	SELECT REJECTED_RECORDS FROM TABLE (RESULT_SCAN(LAST_QUERY_ID()));
 	
-	--COPY INTO WITHOUT ERROR FILES IN ORDERS TABLE--
 	
-	COPY INTO TALE NAME
-	FROM @EXTERNAL_STAGE NAME
-	FILE_FORMAT =(TYPE=CSV FILE_DELIMITER=','SKIP_HEADER=1)
-	ON_ERRORS = CONTINUE
-	SELECT * FROM REJECTED_RECORD
 	--SPLIT THE ERROR RECORDS AND LOAD THE TABLE--
 
 	CREATE OR RELACE TABLE REJECTED2 AS 
@@ -632,9 +638,6 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
 		     from @stage name
 	  -->select * from table name
 33,HOW TO DATA UNLOADING IN SNOWFLAKE TO AWS?
-     --> Create table in snowfalke
-     --> Create AWS s3 bucket  
-	 --> Create IAM Roles to access the files in AWS 
 	 --> Create S3 integration 
 	 --> Describe S3 integration and take the user ARN and External ID 
 	 --> Modify the trust policy to add the ARN and eternal ID 
@@ -682,8 +685,7 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
 6. Create a stage (AWS Url) 
 7. list to see how many files are there 
 8. Create a table 
-9. Perform copy to load the data (file foramt , copy options )  to test 
-10. Create a pipe and describe the pipe and configure pipe ARN into s3 properties as SQS
+9. Create a pipe and describe the pipe and configure pipe ARN into s3 properties as SQS
      -->CREATE OR REPLACE PIPE PIPE_NAME
 		AUTO_INGEST = TRUE
 		AS
@@ -813,13 +815,28 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
 			-->works with time travel also available
 			EX: CREATE OR REPLACE TABLE NEW TABLE NAME
 				CLONE
-				OLD TABLE NAME
+				OLD TABLE NAME  
+39,WHAT IS MEAN BY SWAPING IN SNOWFLAKE: 
+			-->swaping is narthing but interchange the data 
+			-->swaping is very fast and efficient 
+			-->quickly reverting to previous version of table 
+			ex:ALTER TABLE TABLE NAME
+			   SWAP WITH 
+			   TABLE NAME
 			
 39,WHAT IS MEAN BY WORKING WITH TASK:
             -->we can schedule the task particular period of time execute the task
 			-->we can schedule sql queries and store procedure 
 			-->root task also created 
-			-->child task also created 
+			-->child task also created
+			-->CRON FIELDS:
+					-->MINUTES
+					-->HOURS
+					-->DATE
+					-->MONTH 
+					-->DAY OF THE WEAK (0 SUN,1 MON,2 TUE,3 WED,4 THU,5 FRI 6 SAT)					
+			
+	-----------------ROOT TASK-----------------------------
 			ex:CREATE TABLE TASK_TABLE
 				(
 				ID INT AUTOINCREMENT START -1   INCREMENT -1,
@@ -829,7 +846,7 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
 
 				SELECT * FROM TASK_TABLE
 
-				----------------CREATE TASK--------------------
+	----------------CREATE TASK--------------------
 
 				CREATE OR REPLACE TASK TASK_1
 				 WAREHOUSE =COMPUTE_WH
@@ -838,12 +855,65 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
 				 INSERT INTO  TASK_TABLE(LOAD_TIME)
 				 VALUES(CURRENT_TIMESTAMP);
 				 
+				 ALTER TASK TASK_NAME RESUME;
+				 SELECT * FROM TABLE 
+	----------------CREATE DAG----------------------------	 
+				CREATE OR REPLACE TABLE RAJESH_TABLE2(
+				ID INT AUTOINCREMENT START=1 INCREMENT=1,
+				NAME VARCHAR(20) DEFAULT'RAJESH',
+				LOAD_TIME TIMESTAMP
+				)
+
+				CREATE OR REPLACE TASK SATISH_TASK
+				WAREHOUSE = COMPUTE_WH
+				SCHEDULE ='1 MINUTE'
+				AS
+				INSERT INTO RAJESH_TABLE2(LOAD_TIME) VALUES (CURRENT_TIMESTAMP)
+
+	------------------------CREATE CHILDTASK--------------------------------
+				CREATE OR REPLACE TASK SATISH_TASK1
+				WAREHOUSE = COMPUTE_WH
+				AFTER SATISH_TASK
+				AS
+				CREATE OR REPLACE TABLE SATISH_TEMP1
+				AS 
+				SELECT * FROM RAJESH_TABLE2
+
+	-------------------------------------------------------------------------
+				CREATE OR REPLACE TASK SATISH_TASK2
+				WAREHOUSE = COMPUTE_WH
+				AFTER SATISH_TASK
+				AS
+				CREATE OR REPLACE TABLE SATISH_TEMP2
+				AS
+				SELECT * FROM SATISH_TEMP1
+
+				ALTER TASK SATISH_TASK2 RESUME;
+				ALTER TASK SATISH_TASK1 RESUME
+				ALTER TASK SATISH_TASK RESUME 
+
+				ALTER TASK SATISH_TASK  SUSPEND
+				ALTER TASK SATISH_TASK1 SUSPEND
+				ALTER TASK SATISH_TASK2 SUSPEND
+
+				SELECT * FROM RAJESH_TABLE2
+				SELECT * FROM SATISH_TEMP1
+				SELECT * FROM SATISH_TEMP2
+				SHOW TASKS
+				 
+39,IF THE TASK IS NOT RUNNING HOW TO TROUBLESHOOT?
+		-->verify the task status,it should be like start,if it is in suspend state,resume it by using alter command
+		-->check the task history and check execution state,if it is failed state,take the query id and check the failure reason 
+		-->verify the permission granted to the task owner,owner should have access to the database,schema,tables and warehouse
+		-->verify the condition (only for streams) 
+				 
 40,WHAT IS MEAN BY STREAMS IN SNOWFLAKE:
 		-->In Snowflake, a stream is used to track changes to data in a table
 		-->CDC means continue data capture
         -->there are 3 types of snowflake streams
 		1,STANDARD STREAMS::a standard stream track all DML changes,insert,update,delete (including table truncate )    
-		 (ex;CREATE STREAM STREAM NAME ON TABLE NAME 
+		 (ex;CREATE STREAM STREAM NAME 
+			 ON TABLE NAME 
 		 
 		2,APPEND-ONLY  STREAMS::
 		    -->Tracks only inserted rows.
@@ -853,6 +923,62 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
 		3,INSERT-ONLY STREAMS::supported only external tables only,insert row only,they do not record delete operations
 		   (EX:CREATE OR REPLACE STREAM STREAM NAME ON TABLE TABLE NAME
 		        INSERT_ONLY = TRUE
+
+
+				----------------CREATE SOURCE TABLE----------------------
+
+			EX:	CREATE OR REPLACE TABLE RAJESH_TABLE1(
+				ID INT,
+				FIRST_NAME VARCHAR(20),
+				LAST_NAME VARCHAR(20),
+				SALARY INT 
+				);
+
+				----------------INSERT THE DATA IN SOURCE TABLE-------------
+				INSERT INTO RAJESH_TABLE1(ID,FIRST_NAME,LAST_NAME,SALARY) VALUES
+				(100,'RAJESH','MANDADI',10000),
+				(101,'SATISH','MANDADI',20000),
+				(102,'MASTAN','ARCAT',30000)
+
+				-----------------CREATE STREAM FOR SOURCE TABLE--------------------
+
+				CREATE OR REPLACE STREAM RAJESH_STREAM ON TABLE RAJESH_TABLE1
+
+
+				-----------------CREATE TARGET TABLE ----------------------------
+				CREATE OR REPLACE TABLE RAJESH_TABLE2(
+				ID INT,
+				FIRST_NAME VARCHAR(20),
+				LAST_NAME VARCHAR(20),
+				SALARY INT 
+				);
+				--------------CREATE TASK---------------------
+				CREATE OR REPLACE TASK RAJESH_TASK
+				WAREHOUSE = COMPUTE_WH
+				SCHEDULE = '1 MINUTE'
+				AS 
+				INSERT INTO RAJESH_TABLE2
+				SELECT ID,
+					   FIRST_NAME,
+					   LAST_NAME,
+					   SALARY
+					   FROM RAJESH_STREAM
+					   
+				ALTER TASK RAJESH_TASK RESUME;
+
+				SELECT * FROM RAJESH_TABLE1
+
+				SELECT * FROM RAJESH_STREAM
+
+				SELECT * FROM RAJESH_TABLE2
+
+				---------------------UPDATE THE RECORDS---------------------
+				UPDATE  RAJESH_TABLE1
+				SET FIRST_NAME = 'RAJESH'
+				WHERE ID = 100
+
+				DELETE FROM RAJESH_TABLE1
+				WHERE ID = 100
 				
 				
 41,DATA SHARING IN SNOWFLAKE;
@@ -861,7 +987,7 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
 			-->with in the region and another region also data sharing is posible
 			-->in snowflake users data sharing directly create shared object
 			-->for non-snowflake users,create reader account share the data
-			-->single share object multiple consumeres share the data
+			-->single share object multiple consumeres share the data					
     THIS IS SOURCE ACCOUNT:
             EX:CREATE OR REPLACE DATABASE DATA_SHARING
 			CREATE OR REPLACE STAGE EXTERNAL_STAGE
@@ -932,8 +1058,9 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
 		
 44,WHAT IS MEAN BY DATAMASKING IN SNOWFLAKE?
 		-->snowfalke supports using Dynamic Data Masking on columns of tables and views. We can partially mask the data or fully mask the data from un-authorized users.
-		
-        -->Data masking in Snowflake is a security feature that protects sensitive data by securing or transforming it for users who lack the necessary permissions. It allows organizations to control access to sensitive information while enabling authorized users to view the data in its original form.
+		-->Same masking policy can be applied on multiple colUms 
+		-->mostly masking policy applied based on the roles 
+        
 		
 		EX:CREATE OR REPLACE TABLE RAJESH(
 				ID INT,
@@ -960,7 +1087,8 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
 
 				GRANT ROLE RAJESH_MASK TO USER NAIDU;
 				GRANT ROLE RAJESH_FULL TO USER NAIDU;
-
+				
+---------------ONLY LEFT SIDE 2 VALUES VISIBLE--------------------
 				CREATE OR REPLACE MASKING POLICY NAME
 				AS (VAL VARCHAR) RETURNS VARCHAR ->
 				 CASE
@@ -975,13 +1103,14 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
 				ALTER TABLE IF EXISTS RAJESH MODIFY COLUMN EMAIL
 				UNSET MASKING POLICY
 
-
-				CREATE OR REPLACE MASKING POLICY NAME
+----------------FULLY MASK THE DATA -----------------------------
+				CREATE OR REPLACE MASKING POLICY RAJESH_POLICY
 				AS (VAL VARCHAR) RETURNS VARCHAR ->
-				 CASE
-				   WHEN CURRENT_ROLE ()IN ('RAJESH_FULL','ACCOUNTADMIN') THEN VAL
-				   ELSE CONCAT(LEFT(VAL,2),'###-###-####')
-				   END;
+				CASE
+				WHEN CURRENT_ROLE()IN('RAJESH_ROLE')THEN VAL
+				ELSE '###-###-####')
+				END;
+
 
 				ALTER TABLE IF EXISTS RAJESH MODIFY COLUMN NAME
 				SET MASKING POLICY NAME
@@ -989,6 +1118,13 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
 
 				ALTER TABLE IF EXISTS RAJESH MODIFY COLUMN EMAIL
 				UNSET MASKING POLICY
+------------------ONLY RIGHT SIDE VALUES 2 VISIBLE--------------------
+				CREATE OR REPLACE MASKING POLICY RAJESH_POLICY
+				AS (VAL VARCHAR) RETURNS VARCHAR ->
+				CASE
+				WHEN CURRENT_ROLE()IN('RAJESH_ROLE')THEN VAL
+				ELSE CONCAT('###-###-####',RIGHT(VAL,2))
+				END;
 
 45,WHAT IS MEAN BY VIEWS?HOW MANY TYPES OF VIEWS?
 		-->A view is a database object that contain sql query built over one or multiple tables
@@ -1018,7 +1154,7 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
 	     -->a materialized views store pre-compute result set
 		 -->can create single table only,can't built on multiple table
 		 -->querying a materialized views gives better performance than querying base table
-		 -->improve the performance 
+		 -->improve the performance   
 		 -->no need of additional maintainence auto refresh of result
 		 -->does not support joins,including self joins
 		 -->does not support aggrigate functions and windows functions
@@ -1081,7 +1217,7 @@ OUTPUT:120 Matthew	Weiss matthew.weiss@sqltutorial.org	650.123.1234 1996-07-18	1
 		-->6x-large 512credit/hour
 	2,storage cost:                                      
 	   -->monthly storage fees 
-	   -->based on average storage used per month
+	   -->average storage used per month
 	   -->cost calculated after compression
 	   -->cloud provider
 
@@ -1093,5 +1229,32 @@ ANS, SCALEUP: -->it means increase the the wherehouse size
 			  
 	 SCALEOUT:-->increase the number of clusters to avoid a queries going into queues 
 	          
-			  EX:ALTER WAREHOUSE WAREHOUSE HOUSE NAME SET MAX_CLUSTER_COUNT=8, MIN_CLUSTER_COUNT =2,
+			  EX:ALTER WAREHOUSE WAREHOUSE NAME SET MAX_CLUSTER_COUNT=8, MIN_CLUSTER_COUNT =2,
 			  
+51,TYPES OF CACHES IN SNOWFLAKE?
+	--->There are two types of caches available in snowflake
+	    1,RESULT CACHE -->result cache located in the cloud service layer and it can hold the results for next 
+				24hours if try to run the same query with in  24hours it will fetch the results very fast
+				
+				
+		2,LOCAL DISK CACHE -->local disk cache located in the virtula warehouse. hear the data will be available for the virtual warehouse up and running.whenever the virtual warehouse is suspend the localdisk cache cleared
+		
+52,NVL:-->The NVL functions is used to replace the null values
+	   -->NVL take 2  parameter 
+	   -->first parameters is NULL it will take second paremeter
+	   -->first parameter is NOTNULL  it will take the first value
+	   EX:SELECT NVL(NULL, 'Default Value');  
+	      -->OUTPUT: 'Default Value'
+		  
+		  SELECT NVL('Hello', 'Default Value');  
+		  -->OUTPUT 'Hello'
+
+   NVL2:-->The NVL2 function is more advanced.
+		-->NVL2  take 3 parameters	
+		-->First parameter is NULL it will take third parameter
+		-->first parameter is NOTNULL it will take second parameter	
+		EX:SELECT NVL2(NULL, 'Not Null', 'Is Null');  
+		   OUTPUT:'Is Null'
+			
+		   SELECT NVL2('Hello', 'Not Null', 'Is Null');  
+		   OUTPUT:'Not Null'
